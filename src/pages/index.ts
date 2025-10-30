@@ -1,0 +1,17 @@
+export { default as Home } from './Home';
+export { default as About } from './About';
+export { default as Partners } from './Partners';
+export { default as Volunteers } from './Volunteers';
+export { default as Competitions } from './Competitions';
+export { default as CompetitionDetail } from './CompetitionDetail';
+export { default as Results } from './Results';
+export { default as Gallery } from './Gallery';
+export { default as GalleryDetail } from './GalleryDetail';
+export { default as PartnerCompetitions } from './PartnerCompetitions';
+export { default as Products } from './Products';
+export { default as ProductDetail } from './ProductDetail';
+export { default as Calendar } from './Calendar';
+export { default as Basket } from './Basket';
+export { default as Order } from './Order';
+export { default as OrderSuccess } from './OrderSuccess';
+export { default as BuyTicket } from './BuyTicket';

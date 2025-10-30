@@ -1,0 +1,394 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Unbounded:wght@200..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-unbounded: "Unbounded", serif;
+  --font-poppins: "Poppins", serif;
+}
+
+.c-mp-text {
+  font-size: 24px;
+}
+.in-map {
+  width: 100%;
+  height: 500px !important;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 24px;
+  padding: 24px 12px;
+  height: auto;
+}
+.in-maplink {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.in-maplink iframe {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+@media only screen and (max-width: 568px) {
+  .in-map {
+    height: auto !important;
+  }
+  .in-maplink {
+    width: 100%;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .c-mp-text {
+    width: 100%;
+    font-size: 18px;
+    text-align: left;
+    padding: 24px 0;
+  }
+}
+.reg-list {
+  max-width: 100%;
+  height: auto;
+  background: #ffffff0a;
+  border-radius: 12px;
+  margin-top: 48px;
+  padding: 28px 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 32px;
+}
+.reg-list h6 {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 18px;
+  font-family: "Poppins", sans-serif;
+  line-height: normal;
+  text-align: left;
+}
+.reg-list .distances {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  justify-items: flex-start;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.reg-list .distances .item-distance {
+  max-width: 334px;
+  width: 100%;
+  border-bottom: 1px solid #ffffff14;
+  padding-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 20px;
+  p {
+    color: #ffffff66;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: normal;
+    font-family: "Poppins", sans-serif;
+    text-align: start;
+  }
+  .bottom {
+    max-width: 334px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    .left {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      img {
+        min-width: 24px;
+        width: 24px;
+        height: 24px;
+        min-height: 24px;
+      }
+      h3 {
+        color: #ffffff;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 24px;
+        text-align: left;
+        max-width: 222px;
+        width: 100%;
+        font-family: "Poppins", sans-serif;
+      }
+    }
+    .red {
+      color: #ff7979;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: normal;
+      text-align: right;
+      font-family: "Poppins", sans-serif;
+    }
+    .green {
+      color: #8feda0;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: normal;
+      text-align: right;
+      font-family: "Poppins", sans-serif;
+    }
+  }
+  &:nth-last-child(1) {
+    border-bottom: none;
+  }
+}
+
+html[lang="en"] {
+  font-family: "Poppins", serif;
+}
+
+html[lang="az"] {
+  font-family: "Poppins", serif;
+}
+
+html[lang="ru"] {
+  font-family: "Lato", sans-serif;
+}
+
+select:disabled,
+input:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.custom-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+.custom-select:disabled {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.3)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.main-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+@media (min-width: 576px) {
+  .main-container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  .main-container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (min-width: 992px) {
+  .main-container {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+}
+
+body {
+  background-color: #07080d;
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Unbounded", serif;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background: url("../src/assets/svgs/dropdown.svg") no-repeat right 16px center;
+  background-size: 20px;
+
+  background-color: #ffffff14;
+  border: none;
+  border-radius: 9999px; /* full rounding for a pill shape */
+  padding: 16px 48px 16px 18px;
+  color: white;
+  cursor: pointer;
+}
+
+.custom-select option {
+  background: #000;
+}
+
+.custom-select::-ms-expand {
+  display: none;
+}
+
+/* Custom styles for the day picker to match the dark theme */
+.rdp {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: #0b98a1;
+  --rdp-background-color: #333;
+  --rdp-accent-color-dark: #0b98a1;
+  --rdp-background-color-dark: #1e1e1e;
+  --rdp-outline: 2px solid var(--rdp-accent-color);
+  --rdp-outline-selected: 2px solid var(--rdp-accent-color);
+  margin: 0;
+}
+
+.rdp-months {
+  background-color: #1e1e1e;
+}
+
+.rdp-day_selected,
+.rdp-day_selected:focus-visible,
+.rdp-day_selected:hover {
+  background-color: var(--rdp-accent-color);
+  color: white;
+}
+
+.rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+  background-color: #333;
+}
+
+.rdp-dropdown {
+  background-color: #333;
+  color: white;
+}
+
+.rdp-dropdown_month,
+.rdp-dropdown_year {
+  background-color: #333;
+  color: white;
+}
+
+.rdp-dropdown_month option,
+.rdp-dropdown_year option {
+  background-color: #333;
+  color: white;
+}
+
+.rdp-head_cell {
+  color: #999;
+  font-weight: normal;
+}
+
+.rdp-day {
+  color: white;
+}
+
+.rdp-day_outside {
+  color: #666;
+  opacity: 0.5;
+}
+
+.rdp-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  color: white;
+}
+
+/* Custom styles for the month/year dropdowns */
+.rdp-dropdown {
+  appearance: none;
+  padding: 8px 24px 8px 8px;
+  border-radius: 4px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 16px;
+  cursor: pointer;
+}
+
+.rdp-caption_dropdowns {
+  display: flex;
+  gap: 8px;
+  position: relative;
+}
+
+/* Fix the dropdown display */
+.rdp-dropdown_month,
+.rdp-dropdown_year {
+  background-color: #222;
+  border: 1px solid #444;
+  color: white;
+  min-width: 110px;
+}
+
+/* Fix the dropdown options */
+.rdp-dropdown option {
+  background-color: #222;
+  color: white;
+}
+
+/* Fix the month/year display */
+.rdp-caption {
+  padding: 0 !important;
+  margin-bottom: 8px;
+}
+
+/* Fix the weekday headers */
+.rdp-head_cell {
+  color: #999;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+/* Fix the day cells */
+.rdp-day {
+  font-size: 14px;
+}
+.raceItemDesc {
+  table {
+    max-width: 100%;
+    overflow-x: auto;
+    th,
+    td {
+      padding: 12px;
+      border: 1px solid #ffff;
+    }
+  }
+}
