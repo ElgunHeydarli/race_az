@@ -5,7 +5,6 @@ import { useNavigate, useParams } from 'react-router';
 import { useGetCompetitionDetail } from '@/services/competitions';
 import moment from 'moment';
 import { translateds } from '@/context/TranslateContext';
-import React from 'react';
 import { Distance } from '@/services/competitions/types';
 import PartnersLogosCompetitions from '@/PartnersLogosCompetitions';
 
@@ -28,8 +27,6 @@ const GeneralInfo = () => {
     ? competitionDetailData.data
     : null;
 
-  console.log(competitionDetail, 'cccc');
-
   const start = moment(
     competitionDetailData?.data?.registration_dates.start,
   ).format('DD.MM.YYYY');
@@ -37,20 +34,13 @@ const GeneralInfo = () => {
     competitionDetailData?.data?.registration_dates.end,
   ).format('DD.MM.YYYY');
 
-  React.useEffect(() => {
-    console.log(
-      competitionDetailData,
-      'competitionDetailData',
-    );
-  }, [competitionDetailData]);
-
   const hasDistances =
     competitionDetailData?.data &&
     competitionDetailData?.data?.distances &&
     competitionDetailData?.data?.distances?.length > 0
       ? competitionDetailData?.data?.distances
       : [];
-
+  console.log(competitionDetailData,'competitionDetailData')
   const registrationIsTrue =
     competitionDetail &&
     typeof competitionDetail?.registration_status ===

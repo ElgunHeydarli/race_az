@@ -16,6 +16,7 @@ export type Distance = Entity<{
   max_participants: number;
   current_participants: number;
   remainder_participants: number;
+  status:string
 }>;
 
 export type Logistic = {
