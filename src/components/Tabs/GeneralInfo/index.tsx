@@ -1,12 +1,12 @@
-import MapPoint from '@/assets/svgs/MapPoint.svg';
-import Calendar from '@/assets/svgs/Calendar.svg';
-import PrimaryButton from '@/components/UI/PrimaryButton';
-import { useNavigate, useParams } from 'react-router';
-import { useGetCompetitionDetail } from '@/services/competitions';
-import moment from 'moment';
-import { translateds } from '@/context/TranslateContext';
-import { Distance } from '@/services/competitions/types';
-import PartnersLogosCompetitions from '@/PartnersLogosCompetitions';
+import MapPoint from "@/assets/svgs/MapPoint.svg";
+import Calendar from "@/assets/svgs/Calendar.svg";
+import PrimaryButton from "@/components/UI/PrimaryButton";
+import { useNavigate, useParams } from "react-router";
+import { useGetCompetitionDetail } from "@/services/competitions";
+import moment from "moment";
+import { translateds } from "@/context/TranslateContext";
+import { Distance } from "@/services/competitions/types";
+import PartnersLogosCompetitions from "@/PartnersLogosCompetitions";
 
 export interface DistanceInnerFeature {
   id: 4;
@@ -21,18 +21,18 @@ const GeneralInfo = () => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: competitionDetailData } =
-    useGetCompetitionDetail(slug || '');
+  const { data: competitionDetailData } = useGetCompetitionDetail(slug || "");
+
   const competitionDetail = competitionDetailData
     ? competitionDetailData.data
     : null;
 
   const start = moment(
-    competitionDetailData?.data?.registration_dates.start,
-  ).format('DD.MM.YYYY');
+    competitionDetailData?.data?.registration_dates.start
+  ).format("DD.MM.YYYY");
   const end = moment(
-    competitionDetailData?.data?.registration_dates.end,
-  ).format('DD.MM.YYYY');
+    competitionDetailData?.data?.registration_dates.end
+  ).format("DD.MM.YYYY");
 
   const hasDistances =
     competitionDetailData?.data &&
@@ -40,15 +40,15 @@ const GeneralInfo = () => {
     competitionDetailData?.data?.distances?.length > 0
       ? competitionDetailData?.data?.distances
       : [];
-  console.log(competitionDetailData,'competitionDetailData')
+
   const registrationIsTrue =
     competitionDetail &&
-    typeof competitionDetail?.registration_status ===
-      'boolean' &&
+    typeof competitionDetail?.registration_status === "boolean" &&
     competitionDetail?.registration_status === true
       ? true
       : false;
-
+  
+  console.log(competitionDetail);
   return (
     <>
       <section className="py-[40px]">
@@ -64,13 +64,12 @@ const GeneralInfo = () => {
             <div className="max-w-[800px] sm:max-w-[1100px] mx-auto w-full">
               <div className="w-full">
                 <h2 className="text-2xl font-semibold mb-4">
-                  {translateds('race_plan')}:
+                  {translateds("race_plan")}:
                 </h2>
                 <div
                   className="text-[#FFFFFFCC] raceItemDesc"
                   dangerouslySetInnerHTML={{
-                    __html:
-                      competitionDetail?.description ?? '',
+                    __html: competitionDetail?.description ?? "",
                   }}
                 />
               </div>
@@ -88,11 +87,11 @@ const GeneralInfo = () => {
                     </span>
                     <p className="text-white">
                       <span className="text-[#FFFFFF99] mr-1">
-                        {translateds('date_race')}:
+                        {translateds("date_race")}:
                       </span>
-                      {moment(
-                        competitionDetail?.competition_start_date,
-                      ).format('DD.MM.YYYY')}
+                      {moment(competitionDetail?.competition_start_date).format(
+                        "DD.MM.YYYY"
+                      )}
                     </p>
                   </div>
                   <div className="flex items-center gap-[12px] border-b border-b-[#FFFFFF14] py-[20px]">
@@ -105,7 +104,7 @@ const GeneralInfo = () => {
                     </span>
                     <p className="text-white">
                       <span className="text-[#FFFFFF99] mr-1">
-                        {translateds('Location')}:
+                        {translateds("Location")}:
                       </span>
                       {competitionDetail?.location}
                     </p>
@@ -120,7 +119,7 @@ const GeneralInfo = () => {
                     </span>
                     <p className="text-white">
                       <span className="text-[#FFFFFF99] mr-1">
-                        {translateds('Registration_dates')}:
+                        {translateds("Registration_dates")}:
                       </span>
                       {start} - {end}
                     </p>
@@ -130,50 +129,42 @@ const GeneralInfo = () => {
               {registrationIsTrue ? (
                 <PrimaryButton
                   onClick={() =>
-                    navigate('/buy-ticket', {
+                    navigate("/buy-ticket", {
                       state: { competitionDetail },
                     })
                   }
                   className="mt-6 sm:mt-[24px]"
                 >
-                  {translateds('join_race')}
+                  {translateds("join_race")}
                 </PrimaryButton>
               ) : (
                 <PrimaryButton
                   disabled
                   className="mt-6 sm:mt-[24px] opacity-50 cursor-not-allowed"
                 >
-                  {translateds('registration_closed')}
+                  {translateds("registration_closed")}
                 </PrimaryButton>
               )}
 
               {/* feature */}
               <div className="reg-list">
-                <h6>
-                  {translateds(
-                    'mesafeler_uzre_aciq_qeydiyyat_sayi',
-                  )}
-                </h6>
+                <h6>{translateds("mesafeler_uzre_aciq_qeydiyyat_sayi")}</h6>
                 <div className="distances">
                   {hasDistances?.map((data: Distance) => (
-                    <div
-                      className="item-distance"
-                      key={data.id}
-                    >
+                    <div className="item-distance" key={data.id}>
                       <div className="bottom">
                         <div className="left">
                           <img src="/distance.svg" alt="" />
                           <h3>{data?.distance}</h3>
                         </div>
-                        {data?.remainder_participants >
-                        0 ? (
+                        {data?.remainder_participants > 0 ? (
                           <h6 className="green">
-                            {data?.remainder_participants}{' '}
-                            {translateds('aciq_yer_title')}
+                            {data?.remainder_participants}{" "}
+                            {translateds("aciq_yer_title")}
                           </h6>
                         ) : (
                           <h6 className="red">
-                            {translateds('yerler_doludur')}
+                            {translateds("yerler_doludur")}
                           </h6>
                         )}
                       </div>
@@ -193,19 +184,15 @@ const GeneralInfo = () => {
           <div className="flex lg:flex-row flex-col bg-[#FFFFFF0D] rounded-[12px] items-center">
             <div className="text-[#FFFFFF] ml-[48px] ">
               <h3 className="c-mp-text">
-                {competitionDetail?.name}{' '}
-                {translateds('map_text')}
+                {competitionDetail?.name} {translateds("map_text")}
               </h3>
             </div>
-            {competitionDetail?.map_link?.startsWith(
-              '<iframe',
-            ) ? (
+            {competitionDetail?.map_link?.startsWith("<iframe") ? (
               <div className="in-map">
                 <div
                   className="in-maplink"
                   dangerouslySetInnerHTML={{
-                    __html:
-                      competitionDetail?.map_link ?? '',
+                    __html: competitionDetail?.map_link ?? "",
                   }}
                 />
               </div>

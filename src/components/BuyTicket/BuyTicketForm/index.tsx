@@ -612,27 +612,31 @@ const BuyTicketForm = ({
                   {translateds("mesafe")}
                 </label>
                 <div className="grid grid-cols-1 gap-[20px] w-full">
-                  <select
-                    {...form.register("distance_id")}
-                    className="w-full appearance-none custom-select  bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none pr-[16px] focus:ring-2 focus:ring-[#0B98A1] duration-300"
-                  >
-                    <option value="" disabled>
-                      {translateds("mesafe")}
-                    </option>
-                    {competitionDetail?.distances.map(
-                      (item) =>
-                        item.status === "active" && (
-                          <option key={item.id} value={item.id.toString()}>
-                            {item.distance}
-                          </option>
-                        )
-                    )}
-                    {form.formState.errors.distance_id && (
-                      <p className="text-red-400 text-xs mt-1">
-                        {form.formState.errors.distance_id.message}
-                      </p>
-                    )}
-                  </select>
+                  {competitionDetail?.distances.length !== 0 && (
+                    <select
+                      {...form.register("distance_id")}
+                      className="w-full appearance-none custom-select  bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none pr-[16px] focus:ring-2 focus:ring-[#0B98A1] duration-300"
+                    >
+                      <option value="" disabled>
+                        {translateds("mesafe")}
+                      </option>
+
+                      {competitionDetail?.distances.map(
+                        (item) =>
+                          item.status === "active" && (
+                            <option key={item.id} value={item.id.toString()}>
+                              {item.distance}
+                            </option>
+                          )
+                      )}
+
+                      {form.formState.errors.distance_id && (
+                        <p className="text-red-400 text-xs mt-1">
+                          {form.formState.errors.distance_id.message}
+                        </p>
+                      )}
+                    </select>
+                  )}
                 </div>
               </div>
               <div className="mt-[20px]">

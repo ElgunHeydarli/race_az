@@ -12,8 +12,8 @@ const HomeBanner = ({ banner }: HomeBannerProps) => {
   const createSlug = (title: string) => {
     return title
       .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '');
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
   };
 
   const competitionSlug = createSlug(banner.title);
@@ -21,10 +21,14 @@ const HomeBanner = ({ banner }: HomeBannerProps) => {
   // Button üçün ikon seçimi
   const getButtonIcon = (text: string) => {
     const lowerText = text.toLowerCase();
-    if (lowerText.includes('nəticə') || lowerText.includes('result')) {
+    if (lowerText.includes("nəticə") || lowerText.includes("result")) {
       return <BarChart3 className="w-5 h-5" />;
     }
-    if (lowerText.includes('şəkil') || lowerText.includes('gallery') || lowerText.includes('photo')) {
+    if (
+      lowerText.includes("şəkil") ||
+      lowerText.includes("gallery") ||
+      lowerText.includes("photo")
+    ) {
       return <Images className="w-5 h-5" />;
     }
     return null;
@@ -33,13 +37,22 @@ const HomeBanner = ({ banner }: HomeBannerProps) => {
   // Düzgün link yaratmaq
   const getButtonLink = (text: string) => {
     const lowerText = text.toLowerCase();
-    if (lowerText.includes('nəticə') || lowerText.includes('result')) {
+    if (
+      lowerText.includes("nəticə") ||
+      lowerText.includes("result") ||
+      lowerText.includes("результаты")
+    ) {
       return `/result/${competitionSlug}`;
     }
-    if (lowerText.includes('şəkil') || lowerText.includes('gallery') || lowerText.includes('photo')) {
+    if (
+      lowerText.includes("şəkil") ||
+      lowerText.includes("gallery") ||
+      lowerText.includes("photo") ||
+      lowerText.includes("фотографии")
+    ) {
       return `/gallery/${competitionSlug}`;
     }
-    return '#';
+    return "#";
   };
 
   return (
@@ -87,7 +100,7 @@ const HomeBanner = ({ banner }: HomeBannerProps) => {
           {banner.buttons.map((button, index) => {
             const icon = getButtonIcon(button.text);
             const linkUrl = getButtonLink(button.text);
-            
+
             return (
               <motion.div
                 key={index}
@@ -114,17 +127,17 @@ const HomeBanner = ({ banner }: HomeBannerProps) => {
                 >
                   {/* Hover Background Effect */}
                   <span className="absolute inset-0 bg-gradient-to-r from-[#53C5D7]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                  
+
                   {/* Icon */}
                   {icon && (
                     <span className="relative z-10 transform group-hover:rotate-12 transition-transform duration-300">
                       {icon}
                     </span>
                   )}
-                  
+
                   {/* Text */}
                   <span className="relative z-10">{button.text}</span>
-                  
+
                   {/* Shine Effect */}
                   <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></span>
