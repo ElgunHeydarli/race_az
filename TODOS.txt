@@ -1,0 +1,5 @@
+- Optimize navbar
+- Optimize dropdown
+- Add Animations to other pages 
+- Look through all pages again by looking bugs
+- Active Navbar
