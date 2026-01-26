@@ -25,5 +25,7 @@ export const apiMainRoutes = {
   getResult: '/competitions/:slug/results',
   getCompetitionGallery: 'competitions/slug/:slug/gallery-years',
   getPartnerCompetitions: '/partners/competitions',
-  getSeoPage: '/seo'
+  getSeoPage: '/seo',
+  getCalendarEvents: '/calendar-events',
+  getCalendarEventsUpcoming: '/calendar-events/upcoming'
 };

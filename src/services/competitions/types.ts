@@ -16,7 +16,8 @@ export type Distance = Entity<{
   max_participants: number;
   current_participants: number;
   remainder_participants: number;
-  status:string
+  status: string;
+  order?: number;
 }>;
 
 export type Logistic = {
@@ -43,6 +44,50 @@ export type LogisticsServices = {
   };
 };
 
+export type ProductColor = {
+  name: string;
+  code: string;
+};
+
+export type AvailableProduct = {
+  id: number;
+  name: string;
+  name_az?: string;
+  price: number;
+  image: string;
+  sizes?: string[];
+  colors?: ProductColor[];
+  in_stock: boolean;
+  stock?: number;
+};
+
+export type FormFieldConfig = {
+  enabled: boolean;
+  label?: string;
+  label_az?: string;
+  placeholder?: string;
+  placeholder_az?: string;
+};
+
+export type FormConfig = {
+  name?: FormFieldConfig;
+  surname?: FormFieldConfig;
+  birth_date?: FormFieldConfig;
+  gender?: FormFieldConfig;
+  itra_code?: FormFieldConfig;
+  team_name?: FormFieldConfig;
+  country_id?: FormFieldConfig;
+  email?: FormFieldConfig;
+  phone?: FormFieldConfig;
+  distance_id?: FormFieldConfig;
+  logistics?: FormFieldConfig;
+  tent_rental?: FormFieldConfig;
+  donation?: FormFieldConfig;
+  race_number?: FormFieldConfig;
+  promo_code?: FormFieldConfig;
+  terms_accepted?: FormFieldConfig;
+};
+
 export type Competition = {
   id: number;
   name: string;
@@ -64,6 +109,8 @@ export type Competition = {
   logistics_services: LogisticsServices;
   distances: Distance[];
   gallery_items: GalleryItem[];
+  available_products?: AvailableProduct[];
+  form_config?: FormConfig;
   status: boolean;
   distance: string;
   map_link: string;
@@ -72,6 +119,7 @@ export type Competition = {
   price: string;
   slug: string;
   order: number;
+  is_race_az_event: boolean;
   created_at: string;
   updated_at: string;
 };

@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import PrimaryButton from "@/components/UI/PrimaryButton";
 import { translateds } from "@/context/TranslateContext";
-import { Competition } from "@/services/competitions/types";
+import { AvailableProduct, Competition, FormConfig } from "@/services/competitions/types";
 import { CountriesForDeliveryForm } from "@/components/Order/OrderDetail/Delivery";
 import { useFetch } from "@/utils/reactQuery";
 import { Controller, useForm } from "react-hook-form";
@@ -21,6 +21,24 @@ const BuyTicketForm = ({
 }) => {
   const promo_applied = translateds("promo_applied");
 
+  // Form config helpers
+  const formConfig = competitionDetail?.form_config || {};
+
+  const isFieldEnabled = (fieldName: keyof FormConfig): boolean => {
+    const config = formConfig[fieldName];
+    return config?.enabled !== false; // Default to true if not specified
+  };
+
+  const getFieldLabel = (fieldName: keyof FormConfig, defaultLabel: string): string => {
+    const config = formConfig[fieldName];
+    return config?.label_az || config?.label || defaultLabel;
+  };
+
+  const getFieldPlaceholder = (fieldName: keyof FormConfig, defaultPlaceholder: string): string => {
+    const config = formConfig[fieldName];
+    return config?.placeholder_az || config?.placeholder || defaultPlaceholder;
+  };
+
   const [promoCode, setPromoCode] = useState<string>("");
   const [showCalendar, setShowCalendar] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -39,6 +57,18 @@ const BuyTicketForm = ({
 
   const [raceNumber, setRaceNumber] = React.useState<string>("");
   const [resultat, setResultat] = React.useState<string>("");
+  const [showPromoCode, setShowPromoCode] = React.useState<boolean>(false);
+
+  // Products state
+  type SelectedProduct = {
+    product_id: number;
+    size?: string;
+    color?: string;
+    quantity: number;
+    price: number;
+    name: string;
+  };
+  const [selectedProducts, setSelectedProducts] = React.useState<SelectedProduct[]>([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -94,11 +124,18 @@ const BuyTicketForm = ({
 
     const donation = Number(values.donation_amount || 0);
 
+    // Calculate products total
+    const productsTotal = selectedProducts.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
     let total =
       Number(distancePrice) +
       Number(logisticsPrice) +
       Number(tentRentalPrice) +
-      Number(donation);
+      Number(donation) +
+      Number(productsTotal);
 
     if (discountResponse?.discount_amount) {
       total -= discountResponse.discount_amount;
@@ -110,6 +147,7 @@ const BuyTicketForm = ({
     form.watch("logistics"),
     form.watch("tent_rental"),
     form.watch("donation_amount"),
+    selectedProducts,
     discountResponse,
     competitionDetail,
   ]);
@@ -133,11 +171,20 @@ const BuyTicketForm = ({
 
   const handleSubmit = async (data: FormValues) => {
     try {
+      // Prepare products for API
+      const productsPayload = selectedProducts.map((p) => ({
+        product_id: p.product_id,
+        size: p.size || undefined,
+        color: p.color || undefined,
+        quantity: p.quantity,
+      }));
+
       const payload = {
         ...data,
         distance_id: Number(data.distance_id),
         donation_amount: Number(data.donation_amount),
         promo_code: promoCode || undefined,
+        products: productsPayload.length > 0 ? productsPayload : undefined,
       };
 
       const response = await axiosClient.post<{
@@ -202,6 +249,74 @@ const BuyTicketForm = ({
         }
       }
     }
+  };
+
+  // Product management functions
+  const addProduct = (product: AvailableProduct) => {
+    const existing = selectedProducts.find((p) => p.product_id === product.id);
+    if (existing) {
+      setSelectedProducts((prev) =>
+        prev.map((p) =>
+          p.product_id === product.id
+            ? { ...p, quantity: p.quantity + 1 }
+            : p
+        )
+      );
+    } else {
+      setSelectedProducts((prev) => [
+        ...prev,
+        {
+          product_id: product.id,
+          name: product.name_az || product.name,
+          price: product.price,
+          quantity: 1,
+          size: product.sizes?.[0],
+          color: product.colors?.[0]?.name,
+        },
+      ]);
+    }
+  };
+
+  const removeProduct = (productId: number) => {
+    setSelectedProducts((prev) =>
+      prev.filter((p) => p.product_id !== productId)
+    );
+  };
+
+  const updateProductQuantity = (productId: number, quantity: number) => {
+    if (quantity <= 0) {
+      removeProduct(productId);
+      return;
+    }
+    setSelectedProducts((prev) =>
+      prev.map((p) =>
+        p.product_id === productId ? { ...p, quantity } : p
+      )
+    );
+  };
+
+  const updateProductSize = (productId: number, size: string) => {
+    setSelectedProducts((prev) =>
+      prev.map((p) =>
+        p.product_id === productId ? { ...p, size } : p
+      )
+    );
+  };
+
+  const updateProductColor = (productId: number, color: string) => {
+    setSelectedProducts((prev) =>
+      prev.map((p) =>
+        p.product_id === productId ? { ...p, color } : p
+      )
+    );
+  };
+
+  const isProductSelected = (productId: number) => {
+    return selectedProducts.some((p) => p.product_id === productId);
+  };
+
+  const getSelectedProduct = (productId: number) => {
+    return selectedProducts.find((p) => p.product_id === productId);
   };
 
   const { data: countriesForDelivery } = useFetch<{
@@ -399,58 +514,63 @@ const BuyTicketForm = ({
                 </div>
               </div>
               <div className="mt-[20px]">
-                <span className="text-[#FFFFFF80]  inline-block mb-[12px] text-[12px]">
-                  *{translateds("itra_code_have")}
-                </span>
+                {(isFieldEnabled("itra_code") || isFieldEnabled("team_name")) && (
+                  <span className="text-[#FFFFFF80]  inline-block mb-[12px] text-[12px]">
+                    *{translateds("itra_code_have")}
+                  </span>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-[10px] lg:gap-[20px] w-full">
-                  <div>
-                    <label
-                      htmlFor="itra_code"
-                      className="block text-white text-sm mb-2"
-                    >
-                      {translateds("ITRA_code")}
-                    </label>
-                    <input
-                      {...form.register("itra_code")}
-                      className="w-full  bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
-                      type="text"
-                      placeholder={translateds("ITRA_code")}
-                      onChange={(e) => {
-                        const regex = /^[\p{L}\p{N}\s.-]*$/u;
-                        const filteredValue = e.target.value
-                          .split("")
-                          .filter((char) => regex.test(char))
-                          .join("");
-                        form.setValue("itra_code", filteredValue);
-                      }}
-                      onKeyDown={(e) => {
-                        const allowedKeys = [
-                          "Backspace",
-                          "Tab",
-                          "Enter",
-                          "ArrowLeft",
-                          "ArrowRight",
-                          "Delete",
-                          "Home",
-                          "End",
-                        ];
-                        const key = e.key;
-                        const regex = /^[\p{L}\p{N}\s.-]*$/u;
+                  {isFieldEnabled("itra_code") && (
+                    <div>
+                      <label
+                        htmlFor="itra_code"
+                        className="block text-white text-sm mb-2"
+                      >
+                        {getFieldLabel("itra_code", translateds("ITRA_code"))}
+                      </label>
+                      <input
+                        {...form.register("itra_code")}
+                        className="w-full  bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
+                        type="text"
+                        placeholder={getFieldPlaceholder("itra_code", translateds("ITRA_code"))}
+                        onChange={(e) => {
+                          const regex = /^[\p{L}\p{N}\s.-]*$/u;
+                          const filteredValue = e.target.value
+                            .split("")
+                            .filter((char) => regex.test(char))
+                            .join("");
+                          form.setValue("itra_code", filteredValue);
+                        }}
+                        onKeyDown={(e) => {
+                          const allowedKeys = [
+                            "Backspace",
+                            "Tab",
+                            "Enter",
+                            "ArrowLeft",
+                            "ArrowRight",
+                            "Delete",
+                            "Home",
+                            "End",
+                          ];
+                          const key = e.key;
+                          const regex = /^[\p{L}\p{N}\s.-]*$/u;
 
-                        if (allowedKeys.includes(key)) return;
+                          if (allowedKeys.includes(key)) return;
 
-                        if (!regex.test(key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                    />
-                    {form.formState.errors.itra_code && (
-                      <p className="text-red-400 text-xs mt-1">
-                        {form.formState.errors.itra_code.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
+                          if (!regex.test(key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
+                      {form.formState.errors.itra_code && (
+                        <p className="text-red-400 text-xs mt-1">
+                          {form.formState.errors.itra_code.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {isFieldEnabled("team_name") && (
+                    <div>
                     <label
                       htmlFor="team_name"
                       className="block text-white text-sm mb-2"
@@ -497,33 +617,37 @@ const BuyTicketForm = ({
                       </p>
                     )}
                   </div>
+                  )}
 
-                  <div>
-                    <label
-                      htmlFor="city"
-                      className="block text-white text-sm mb-2"
-                    >
-                      {translateds("select_a_country")}
-                    </label>
-                    <select
-                      {...form.register("country_id")}
-                      className={`w-full appearance-none custom-select bg-[#FFFFFF14] py-[14px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none pr-[16px] focus:ring-2 focus:ring-[#0B98A1] duration-300`}
-                    >
-                      <option value="" disabled selected>
+                  {isFieldEnabled("country_id") && (
+                    <div>
+                      <label
+                        htmlFor="city"
+                        className="block text-white text-sm mb-2"
+                      >
                         {translateds("select_a_country")}
-                      </option>
-                      {hasCountries?.map((c: CountriesForDeliveryForm) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
+                      </label>
+                      <select
+                        {...form.register("country_id")}
+                        className={`w-full appearance-none custom-select bg-[#FFFFFF14] py-[14px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none pr-[16px] focus:ring-2 focus:ring-[#0B98A1] duration-300`}
+                      >
+                        <option value="" disabled selected>
+                          {translateds("select_a_country")}
                         </option>
-                      ))}
+                        {hasCountries?.map((c: CountriesForDeliveryForm) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
                       {form.formState.errors.country_id && (
                         <p className="text-red-400 text-xs mt-1">
                           {form.formState.errors.country_id.message}
                         </p>
                       )}
-                    </select>
-                  </div>
+                    </div>
+                  )}
+                  {isFieldEnabled("email") && (
                   <div>
                     <label
                       htmlFor="email"
@@ -546,6 +670,8 @@ const BuyTicketForm = ({
                       </p>
                     )}
                   </div>
+                  )}
+                  {isFieldEnabled("phone") && (
                   <div>
                     <label
                       htmlFor="phone"
@@ -597,6 +723,7 @@ const BuyTicketForm = ({
                       </p>
                     )}
                   </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -621,14 +748,16 @@ const BuyTicketForm = ({
                         {translateds("mesafe")}
                       </option>
 
-                      {competitionDetail?.distances.map(
-                        (item) =>
-                          item.status === "active" && (
-                            <option key={item.id} value={item.id.toString()}>
-                              {item.distance}
-                            </option>
-                          )
-                      )}
+                      {[...(competitionDetail?.distances || [])]
+                        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                        .map(
+                          (item) =>
+                            item.status === "active" && (
+                              <option key={item.id} value={item.id.toString()}>
+                                {item.distance}
+                              </option>
+                            )
+                        )}
 
                       {form.formState.errors.distance_id && (
                         <p className="text-red-400 text-xs mt-1">
@@ -810,50 +939,233 @@ const BuyTicketForm = ({
               </div>
             ) : null}
 
-            <div>
-              <div className="pt-[40px]  text-base">
-                <h3 className="text-base !font-poppins">
-                  {translateds("promocode_have")}
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px] mt-[20px]">
-                <div className="col-span-2">
-                  <input
-                    onChange={handleChangePromoCode}
-                    onKeyDown={(e) => {
-                      const allowedKeys = [
-                        "Backspace",
-                        "Tab",
-                        "Enter",
-                        "ArrowLeft",
-                        "ArrowRight",
-                        "Delete",
-                        "Home",
-                        "End",
-                      ];
-                      const key = e.key;
-                      const regex = /^[\p{L}\p{N}\s.-]*$/u;
+            {/* Products Section */}
+            {competitionDetail?.available_products &&
+              competitionDetail.available_products.length > 0 && (
+                <div className="pt-[40px]">
+                  <div className="pb-[24px] text-base">
+                    <h3 className="!font-poppins">{translateds("products") || "Məhsullar"}</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-[16px]">
+                    {competitionDetail.available_products.map((product) => (
+                      <div
+                        key={product.id}
+                        className={`bg-[#FFFFFF14] rounded-[12px] p-[16px] ${
+                          isProductSelected(product.id)
+                            ? "ring-2 ring-[#0B98A1]"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex gap-[12px]">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-[80px] h-[80px] object-cover rounded-[8px]"
+                          />
+                          <div className="flex-1">
+                            <h4 className="text-white text-sm font-medium">
+                              {product.name_az || product.name}
+                            </h4>
+                            <p className="text-[#0B98A1] text-sm mt-1">
+                              {product.price} AZN
+                            </p>
+                            {!product.in_stock && (
+                              <p className="text-red-400 text-xs mt-1">
+                                {translateds("out_of_stock") || "Stokda yoxdur"}
+                              </p>
+                            )}
+                          </div>
+                        </div>
 
-                      if (allowedKeys.includes(key)) return;
+                        {product.in_stock && (
+                          <div className="mt-[12px]">
+                            {!isProductSelected(product.id) ? (
+                              <button
+                                type="button"
+                                onClick={() => addProduct(product)}
+                                className="w-full py-[8px] bg-[#0B98A1] hover:bg-[#0a8890] text-white text-sm rounded-full transition-colors"
+                              >
+                                {translateds("add_to_cart") || "Səbətə əlavə et"}
+                              </button>
+                            ) : (
+                              <div className="space-y-[10px]">
+                                {/* Size selector */}
+                                {product.sizes && product.sizes.length > 0 && (
+                                  <div>
+                                    <label className="text-[#FFFFFF80] text-xs block mb-1">
+                                      {translateds("size") || "Ölçü"}
+                                    </label>
+                                    <select
+                                      value={getSelectedProduct(product.id)?.size || ""}
+                                      onChange={(e) =>
+                                        updateProductSize(product.id, e.target.value)
+                                      }
+                                      className="w-full bg-[#FFFFFF14] py-[8px] px-[12px] rounded-full text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#0B98A1]"
+                                    >
+                                      {product.sizes.map((size) => (
+                                        <option key={size} value={size}>
+                                          {size}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                )}
 
-                      if (!regex.test(key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                    className="w-full appearance-none bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
-                    type="text"
-                    placeholder={translateds("promocode_pl")}
-                  />
+                                {/* Color selector */}
+                                {product.colors && product.colors.length > 0 && (
+                                  <div>
+                                    <label className="text-[#FFFFFF80] text-xs block mb-1">
+                                      {translateds("color") || "Rəng"}
+                                    </label>
+                                    <div className="flex gap-[8px] flex-wrap">
+                                      {product.colors.map((color) => (
+                                        <button
+                                          key={color.name}
+                                          type="button"
+                                          onClick={() =>
+                                            updateProductColor(product.id, color.name)
+                                          }
+                                          className={`w-[28px] h-[28px] rounded-full border-2 ${
+                                            getSelectedProduct(product.id)?.color ===
+                                            color.name
+                                              ? "border-[#0B98A1]"
+                                              : "border-transparent"
+                                          }`}
+                                          style={{ backgroundColor: color.code }}
+                                          title={color.name}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Quantity controls */}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-[12px]">
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        updateProductQuantity(
+                                          product.id,
+                                          (getSelectedProduct(product.id)?.quantity || 1) - 1
+                                        )
+                                      }
+                                      className="w-[28px] h-[28px] bg-[#FFFFFF14] hover:bg-[#FFFFFF24] rounded-full text-white flex items-center justify-center"
+                                    >
+                                      -
+                                    </button>
+                                    <span className="text-white text-sm min-w-[20px] text-center">
+                                      {getSelectedProduct(product.id)?.quantity || 0}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        updateProductQuantity(
+                                          product.id,
+                                          (getSelectedProduct(product.id)?.quantity || 0) + 1
+                                        )
+                                      }
+                                      className="w-[28px] h-[28px] bg-[#FFFFFF14] hover:bg-[#FFFFFF24] rounded-full text-white flex items-center justify-center"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeProduct(product.id)}
+                                    className="text-red-400 hover:text-red-300 text-sm"
+                                  >
+                                    {translateds("remove") || "Sil"}
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Selected products summary */}
+                  {selectedProducts.length > 0 && (
+                    <div className="mt-[16px] p-[16px] bg-[#FFFFFF0A] rounded-[12px]">
+                      <h4 className="text-white text-sm font-medium mb-[12px]">
+                        {translateds("selected_products") || "Seçilmiş məhsullar"}
+                      </h4>
+                      <div className="space-y-[8px]">
+                        {selectedProducts.map((item) => (
+                          <div
+                            key={item.product_id}
+                            className="flex justify-between text-sm"
+                          >
+                            <span className="text-[#FFFFFF99]">
+                              {item.name} x{item.quantity}
+                              {item.size && ` (${item.size})`}
+                              {item.color && ` - ${item.color}`}
+                            </span>
+                            <span className="text-white">
+                              {(item.price * item.quantity).toFixed(2)} AZN
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <PrimaryButton
+              )}
+
+            {/* Promo Code Section */}
+            <div>
+              <div className="pt-[40px] text-base">
+                <button
                   type="button"
-                  className="col-span-1"
-                  onClick={handleSubmitPromoCode}
+                  onClick={() => setShowPromoCode(!showPromoCode)}
+                  className="text-base !font-poppins text-[#53C5D7] hover:text-[#0B98A1] transition-colors cursor-pointer"
                 >
-                  {translateds("Apply")}
-                </PrimaryButton>
+                  {translateds("promocode_have")}
+                </button>
               </div>
+              {showPromoCode && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px] mt-[20px]">
+                  <div className="col-span-2">
+                    <input
+                      onChange={handleChangePromoCode}
+                      onKeyDown={(e) => {
+                        const allowedKeys = [
+                          "Backspace",
+                          "Tab",
+                          "Enter",
+                          "ArrowLeft",
+                          "ArrowRight",
+                          "Delete",
+                          "Home",
+                          "End",
+                        ];
+                        const key = e.key;
+                        const regex = /^[\p{L}\p{N}\s.-]*$/u;
+
+                        if (allowedKeys.includes(key)) return;
+
+                        if (!regex.test(key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      className="w-full appearance-none bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
+                      type="text"
+                      placeholder={translateds("promocode_pl")}
+                    />
+                  </div>
+                  <PrimaryButton
+                    type="button"
+                    className="col-span-1"
+                    onClick={handleSubmitPromoCode}
+                  >
+                    {translateds("Apply")}
+                  </PrimaryButton>
+                </div>
+              )}
             </div>
+
             <div className="flex justify-between mt-[43px]">
               <span className="text-[#FFFFFF99]">{translateds("Total")}:</span>
               {resultat ? (
