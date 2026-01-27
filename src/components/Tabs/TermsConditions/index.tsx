@@ -11,7 +11,7 @@ const TermsConditions = () => {
     <section className="py-[40px]">
       <div className="main-container">
         <div>
-          <h2 className="text-[24px] text-white mb-[20px] font-[400]">
+          <h2 className="text-[24px] text-white mb-[20px] font-[400] text-center">
             {translateds('terms_condition')}
           </h2>
           <p

@@ -10,7 +10,8 @@ import { translateds } from '@/context/TranslateContext';
 const UpcomingRaces = () => {
   const sectionRef = useRef(null);
   const { data } = useGetCompetitions();
-  const competitionsData = data && data.data;
+  // Yalnız is_race_az_event = true olan yarışlar göstərilir
+  const competitionsData = data?.data?.filter((item) => item.is_race_az_event === true);
   const [isMobile, setIsMobile] = useState(false);
 
   const held_competitions = translateds('held_competitions');
@@ -49,21 +50,22 @@ const UpcomingRaces = () => {
           <div className="pb-[60px]">
             {isMobile ? (
               // Mobile: Grid layout without scroll
-              <div className="grid grid-cols-1 gap-5">
-                {competitionsData?.map(item => (
-                  <RaceCard
-                    key={item.id}
-                    date={item.competition_start_date}
-                    location={item.location}
-                    variant="fixed"
-                    id={item.id}
-                    name={item.name}
-                    text={item.text}
-                    slug={item.slug}
-                    image={item.image}
-                    imageAlt={item.image_alt}
-                    registration_status={item.registration_status}
-                  />
+              <div className="flex flex-col gap-6">
+                {competitionsData?.map((item) => (
+                  <div key={item.id} className="bg-[#FFFFFF0A] rounded-[16px] p-4">
+                    <RaceCard
+                      date={item.competition_start_date}
+                      location={item.location}
+                      variant="fixed"
+                      id={item.id}
+                      name={item.name}
+                      text={item.text}
+                      slug={item.slug}
+                      image={item.image}
+                      imageAlt={item.image_alt}
+                      registration_status={item.registration_status}
+                    />
+                  </div>
                 ))}
               </div>
             ) : (

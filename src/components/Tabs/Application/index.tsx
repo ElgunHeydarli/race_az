@@ -30,7 +30,7 @@ const Application = () => {
             </PrimaryButton>
           </div>
           <div className="mt-[40px]">
-            <h2 className="text-[24px] text-white mb-[20px] font-[400]">
+            <h2 className="text-[24px] text-white mb-[20px] font-[400] text-center">
               {translateds("raziliq_erizesi")}
             </h2>
             <p

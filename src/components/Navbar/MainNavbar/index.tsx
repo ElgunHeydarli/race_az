@@ -178,7 +178,9 @@ const MainNavbar = () => {
               >
                 <div className="py-[28px] px-[28px] text-[15px]">
                   {competitions &&
-                    competitions.data.map((item, index, arr) => (
+                    competitions.data
+                      .filter((item) => item.is_race_az_event === true)
+                      .map((item, index, arr) => (
                       <div
                         key={item.id}
                         className={`flex flex-col gap-[14px] ${!isLastElement(index, arr) ? 'mb-[14px]' : ''
@@ -423,7 +425,9 @@ const MainNavbar = () => {
                           </div>
                           <div className="flex-grow">
                             {competitions &&
-                              competitions.data.map(race => (
+                              competitions.data
+                                .filter((race) => race.is_race_az_event === true)
+                                .map(race => (
                                 <Link
                                   key={race.id}
                                   to={`/competition/${race.slug}`}

@@ -43,25 +43,23 @@ const Calendar = () => {
   const unifiedEvents = useMemo(() => {
     const events: UnifiedEvent[] = [];
 
-    // Yalnız is_race_az_event = true olan yarışlar göstərilir
-    competitions
-      .filter((comp: Competition) => comp.is_race_az_event === true)
-      .forEach((comp: Competition) => {
-        events.push({
-          id: `comp-${comp.id}`,
-          date: comp.competition_start_date,
-          name: comp.name,
-          organizer: comp.organizer_name,
-          distance: [...(comp.distances || [])]
-            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-            .map((v: Distance) => v.distance)
-            .join(', '),
-          location: comp.location || null,
-          link: `/competition/${comp.slug}`,
-          isRaceAz: true,
-          eventType: null,
-        });
+    // Bütün yarışlar göstərilir, rəng is_race_az_event-ə görə təyin edilir
+    competitions.forEach((comp: Competition) => {
+      events.push({
+        id: `comp-${comp.id}`,
+        date: comp.competition_start_date,
+        name: comp.name,
+        organizer: comp.organizer_name,
+        distance: [...(comp.distances || [])]
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+          .map((v: Distance) => v.distance)
+          .join(', '),
+        location: comp.location || null,
+        link: `/competition/${comp.slug}`,
+        isRaceAz: comp.is_race_az_event ?? true,
+        eventType: null,
       });
+    });
 
     // Xarici tədbirlər
     calendarEvents.forEach((event: CalendarEvent) => {

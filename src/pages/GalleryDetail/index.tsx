@@ -64,6 +64,11 @@ const GalleryDetail = () => {
       /> */}
       <section className="pt-[122px] pb-[100px]">
         <div className="main-container">
+          {galleriesData?.competition?.name && (
+            <h1 className="text-[32px] text-white font-[500] text-center mb-[40px]">
+              {galleriesData.competition.name}
+            </h1>
+          )}
           <div className="flex flex-col gap-[40px]">
             <div className="bg-[#FFFFFF0D] rounded-[12px] p-[24px] overflow-x-auto scrollbar-hide">
               <div ref={scrollRef} className="flex gap-6 min-w-max">

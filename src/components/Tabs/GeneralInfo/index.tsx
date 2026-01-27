@@ -35,10 +35,8 @@ const GeneralInfo = () => {
   ).format("DD.MM.YYYY");
 
   const hasDistances =
-    competitionDetailData?.data &&
-    competitionDetailData?.data?.distances &&
-    competitionDetailData?.data?.distances?.length > 0
-      ? [...competitionDetailData?.data?.distances].sort((a, b) => b.id - a.id)
+    competitionDetailData?.data?.distances && competitionDetailData.data.distances.length > 0
+      ? [...competitionDetailData.data.distances].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       : [];
 
   const registrationIsTrue =
