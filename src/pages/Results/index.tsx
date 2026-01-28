@@ -2,14 +2,11 @@ import { Link, useNavigate } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import moment from 'moment';
 import { translateds } from '@/context/TranslateContext';
-import { useGetSeoOfPage } from '@/services/seo';
-import { Helmet } from 'react-helmet-async';
+import { SEO } from '@/components/SEO';
 import React from 'react';
 import axios from 'axios';
 import { useChangeLang } from '@/hooks/useChangeLang';
 const Results = () => {
-  const { data: resultsData } = useGetSeoOfPage('results');
-  const seoData = resultsData?.data.find((item) => item.key === 'results');
   const { lang } = useChangeLang();
 
   const [competitionData, setCompetitionsData] = React.useState<any>();
@@ -32,12 +29,7 @@ const Results = () => {
   const navigate = useNavigate();
   return (
     <>
-      <Helmet>
-        <title>{seoData?.meta_title}</title>
-        <meta name="description" content={seoData?.meta_description} />
-        <link rel="canonical" href={window.location.href} />
-        <meta property="og:title" content={seoData?.meta_title} />
-      </Helmet>
+      <SEO seoKey="results" />
       {/* <BreadCrumbTitle
         title={translateds('result_text')}
         breadcrumbs={[

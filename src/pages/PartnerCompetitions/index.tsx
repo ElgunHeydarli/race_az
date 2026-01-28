@@ -3,14 +3,9 @@ import PartnerCompetitionList from '@/components/PartnerCompetitions/PartnerComp
 import PartnerCard from '@/components/UI/PartnerCard';
 import { competitionSortOptions } from '@/data/sorts';
 import { useGetPartnerCompetitions, useGetPartners } from '@/services/partners';
-import { useGetSeoOfPage } from '@/services/seo';
-import { Helmet } from 'react-helmet-async';
+import { SEO } from '@/components/SEO';
 
 const PartnerCompetitions = () => {
-  const { data: partnerDataSeo } = useGetSeoOfPage('partnerCompetitions');
-  const seoData = partnerDataSeo?.data.find(
-    (item) => item.key === 'partnerCompetitions'
-  );
 
   const { data: partnerData } = useGetPartners();
   const { data: partnerCompetitionsData } = useGetPartnerCompetitions();
@@ -20,12 +15,7 @@ const PartnerCompetitions = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seoData?.meta_title}</title>
-        <meta name="description" content={seoData?.meta_description} />
-        <link rel="canonical" href={window.location.href} />
-        <meta property="og:title" content={seoData?.meta_title} />
-      </Helmet>
+      <SEO seoKey="partnerCompetitions" />
 
       {/* <BreadCrumbTitle
         className=" absolute top-0"

@@ -3,17 +3,14 @@ import { translateds } from '@/context/TranslateContext';
 import { usePartCol } from '@/data/participants';
 import { useChangeLang } from '@/hooks/useChangeLang';
 import { useGetResult } from '@/services/results';
-import { useGetSeoOfPage } from '@/services/seo';
+import { SEO } from '@/components/SEO';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router';
 
 const ResultDetail = () => {
   const { participantsColumns } = usePartCol();
-  const { data: resultDetailData } = useGetSeoOfPage('resultDetail');
   const { lang } = useChangeLang();
-  const seoData = resultDetailData?.data.find(item => item.key === 'resultDetail');
 
   const { slug } = useParams();
   const { data: resultData } = useGetResult(slug ?? '');
@@ -68,12 +65,7 @@ const ResultDetail = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seoData?.meta_title}</title>
-        <meta name="description" content={seoData?.meta_description} />
-        <link rel="canonical" href={window.location.href} />
-        <meta property="og:title" content={seoData?.meta_title} />
-      </Helmet>
+      <SEO seoKey="resultDetail" />
 
       <section className="pt-[140px]">
         <div className="center w-full p-12 align-center flex justify-center">

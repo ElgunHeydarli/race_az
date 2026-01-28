@@ -1,13 +1,10 @@
 import { useGetCompetitionGallery } from '@/services/competitions';
-import { useGetSeoOfPage } from '@/services/seo';
+import { SEO } from '@/components/SEO';
 import { Link2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router';
 
 const GalleryDetail = () => {
-  const { data: homeData } = useGetSeoOfPage('galleryDetail');
-  const seoData = homeData?.data.find((item) => item.key === 'galleryDetail');
 
   const { slug } = useParams<{ slug: string }>();
   const { data: galleriesData } = useGetCompetitionGallery(slug);
@@ -44,12 +41,7 @@ const GalleryDetail = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seoData?.meta_title}</title>
-        <meta name="description" content={seoData?.meta_description} />
-        <link rel="canonical" href={window.location.href} />
-        <meta property="og:title" content={seoData?.meta_title} />
-      </Helmet>
+      <SEO seoKey="galleryDetail" />
       {/* <BreadCrumbTitle
         title={competitionName}
         breadcrumbs={[

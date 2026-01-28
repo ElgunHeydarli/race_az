@@ -26,6 +26,8 @@ export const apiMainRoutes = {
   getCompetitionGallery: 'competitions/slug/:slug/gallery-years',
   getPartnerCompetitions: '/partners/competitions',
   getSeoPage: '/seo',
+  getSeoByKey: '/seo/:key',
+  getSettings: '/settings/all',
   getCalendarEvents: '/calendar-events',
   getCalendarEventsUpcoming: '/calendar-events/upcoming'
 };

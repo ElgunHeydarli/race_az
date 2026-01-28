@@ -1,18 +1,10 @@
 import Galleries from '@/components/Galleries';
-import { useGetSeoOfPage } from '@/services/seo';
-import { Helmet } from 'react-helmet-async';
+import { SEO } from '@/components/SEO';
 
 const Gallery = () => {
-  const { data: galleryData } = useGetSeoOfPage('gallery');
-  const seoData = galleryData?.data.find((item) => item.key === 'gallery');
   return (
     <>
-      <Helmet>
-        <title>{seoData?.meta_title}</title>
-        <meta name="description" content={seoData?.meta_description} />
-        <link rel="canonical" href={window.location.href} />
-        <meta property="og:title" content={seoData?.meta_title} />
-      </Helmet>
+      <SEO seoKey="gallery" />
       {/* <BreadCrumbTitle
         title={translateds('gallery_text')}
         breadcrumbs={[

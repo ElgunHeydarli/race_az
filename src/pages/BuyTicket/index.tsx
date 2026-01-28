@@ -1,8 +1,7 @@
 import BuyTicketForm from '@/components/BuyTicket/BuyTicketForm';
 import { CompetitionBanner } from '@/components/Competitions';
 import { Competition } from '@/services/competitions/types';
-import { useGetSeoOfPage } from '@/services/seo';
-import { Helmet } from 'react-helmet-async';
+import { SEO } from '@/components/SEO';
 import { useLocation } from 'react-router';
 
 const BuyTicket = () => {
@@ -12,19 +11,9 @@ const BuyTicket = () => {
     competitionDetail: Competition;
   };
 
-  const { data: productDetailData } = useGetSeoOfPage('buy-ticket');
-  const seoData = productDetailData?.data.find(
-    (item) => item.key === 'buy-ticket'
-  );
-
   return (
     <>
-      <Helmet>
-        <title>{seoData?.meta_title}</title>
-        <meta name="description" content={seoData?.meta_description} />
-        <link rel="canonical" href={window.location.href} />
-        <meta property="og:title" content={seoData?.meta_title} />
-      </Helmet>
+      <SEO seoKey="buy-ticket" />
       {/* <BreadCrumbTitle className=" absolute top-0" breadcrumbs={breadcrumbs} /> */}
       <div className='pt-[118px]'>
         <CompetitionBanner

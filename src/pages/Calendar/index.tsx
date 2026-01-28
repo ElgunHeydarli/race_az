@@ -3,9 +3,8 @@ import { useGetCompetitions } from '@/services/competitions';
 import { Competition, Distance } from '@/services/competitions/types';
 import { useGetCalendarEvents } from '@/services/calendarEvents';
 import { CalendarEvent } from '@/services/calendarEvents/types';
-import { useGetSeoOfPage } from '@/services/seo';
+import { SEO } from '@/components/SEO';
 import { useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router';
 
 type ViewMode = 'list' | 'calendar';
@@ -35,9 +34,6 @@ const Calendar = () => {
   const competitions = competitionsData?.data || [];
   // Əgər calendar-events API 404 qaytarırsa, boş array istifadə et
   const calendarEvents = eventsError ? [] : (calendarEventsData?.data || []);
-
-  const { data: calendarData } = useGetSeoOfPage('calendar');
-  const seoData = calendarData?.data.find((item) => item.key === 'calendar');
 
   // Birləşdirilmiş tədbirlər
   const unifiedEvents = useMemo(() => {
@@ -134,12 +130,7 @@ const Calendar = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seoData?.meta_title || translateds('Calendar')}</title>
-        <meta name="description" content={seoData?.meta_description} />
-        <link rel="canonical" href={window.location.href} />
-        <meta property="og:title" content={seoData?.meta_title} />
-      </Helmet>
+      <SEO seoKey="calendar" />
 
       <section className="pb-[100px] pt-[118px]">
         <div className="main-container">

@@ -4,15 +4,9 @@ import { useTab } from "@/hooks/useTab";
 import TermsConditions from "@/components/Tabs/TermsConditions";
 import Participants from "@/components/Tabs/Participants";
 import Application from "@/components/Tabs/Application";
-import { Helmet } from "react-helmet-async";
-import { useGetSeoOfPage } from "@/services/seo";
+import { SEO } from "@/components/SEO";
 
 const CompetitionDetail = () => {
-  const { data: competitionsSeoData } = useGetSeoOfPage("competitionDetail");
-  const seoData = competitionsSeoData?.data.find(
-    (item) => item.key === "competitionDetail",
-  );
-
   // const competitions_held = translateds('competitions_held');
   const { activeTab } = useTab();
   // const { slug } = useParams<{ slug: string }>();
@@ -31,12 +25,7 @@ const CompetitionDetail = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{seoData?.meta_title}</title>
-        <meta name="description" content={seoData?.meta_description} />
-        <link rel="canonical" href={window.location.href} />
-        <meta property="og:title" content={seoData?.meta_title} />
-      </Helmet>
+      <SEO seoKey="competitionDetail" />
       {/* <BreadCrumbTitle
         title={competitionDetail?.name}
         breadcrumbs={[
