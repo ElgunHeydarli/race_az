@@ -22,4 +22,24 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://admin.race.az',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+      },
+      '/sitemap.xml': {
+        target: 'https://admin.race.az/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/sitemap\.xml/, '/sitemap.xml'),
+      },
+      '/robots.txt': {
+        target: 'https://admin.race.az/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/robots\.txt/, '/robots.txt'),
+      },
+    },
+  },
 });

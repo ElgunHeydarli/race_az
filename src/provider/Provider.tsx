@@ -5,6 +5,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { TranslateProvider } from '@/context/TranslateContext';
+import { SeoProvider } from '@/context/SeoContext';
 
 export const Provider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
@@ -19,11 +20,13 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <HelmetProvider>
-          <TranslateProvider>
-            {children}
-            <ReactQueryDevtools initialIsOpen={false} />
-            <Toaster />
-          </TranslateProvider>
+          <SeoProvider>
+            <TranslateProvider>
+              {children}
+              <ReactQueryDevtools initialIsOpen={false} />
+              <Toaster />
+            </TranslateProvider>
+          </SeoProvider>
         </HelmetProvider>
       </QueryClientProvider>
     </BrowserRouter>

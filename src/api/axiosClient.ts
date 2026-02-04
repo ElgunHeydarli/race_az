@@ -1,12 +1,21 @@
 import axios from 'axios';
+import { useChangeLang } from '@/hooks/useChangeLang';
 
-const BASE_URL = 'https://admin.race.az';
+// Use relative URL in development to leverage Vite proxy
+const BASE_URL = import.meta.env.DEV ? '' : 'https://admin.race.az';
 
 export const axiosClient = axios.create({
   baseURL: `${BASE_URL}/api`,
   headers: {
     'Accept-Language': 'az',
   },
+});
+
+// Add language interceptor
+axiosClient.interceptors.request.use((config) => {
+  const { lang } = useChangeLang.getState?.() || { lang: 'az' };
+  config.headers['Accept-Language'] = lang;
+  return config;
 });
 
 export const api = {

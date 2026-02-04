@@ -14,12 +14,17 @@ import { Calendar } from "lucide-react";
 import BaseCalendar from "../BaseCalendar";
 import { formSchema, FormValues } from "./form-schema";
 import axios from "axios";
+import { useRegistrationTranslations } from "@/hooks/useRegistrationTranslations";
+
 const BuyTicketForm = ({
   competitionDetail,
 }: {
   competitionDetail: Competition;
 }) => {
   const promo_applied = translateds("promo_applied");
+  
+  // Fetch registration-specific translations
+  const { translations: registrationTranslations } = useRegistrationTranslations();
 
   // Form config helpers
   const formConfig = competitionDetail?.form_config || {};
@@ -565,6 +570,11 @@ const BuyTicketForm = ({
                       {form.formState.errors.itra_code && (
                         <p className="text-red-400 text-xs mt-1">
                           {form.formState.errors.itra_code.message}
+                        </p>
+                      )}
+                      {registrationTranslations.registration_itra_hint && (
+                        <p className="text-[#FFFFFF99] text-xs mt-2">
+                          {registrationTranslations.registration_itra_hint}
                         </p>
                       )}
                     </div>
@@ -1114,57 +1124,59 @@ const BuyTicketForm = ({
                 </div>
               )}
 
-            {/* Promo Code Section */}
-            <div>
-              <div className="pt-[40px] text-base">
-                <button
-                  type="button"
-                  onClick={() => setShowPromoCode(!showPromoCode)}
-                  className="text-base !font-poppins text-[#53C5D7] hover:text-[#0B98A1] transition-colors cursor-pointer"
-                >
-                  {translateds("promocode_have")}
-                </button>
-              </div>
-              {showPromoCode && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px] mt-[20px]">
-                  <div className="col-span-2">
-                    <input
-                      onChange={handleChangePromoCode}
-                      onKeyDown={(e) => {
-                        const allowedKeys = [
-                          "Backspace",
-                          "Tab",
-                          "Enter",
-                          "ArrowLeft",
-                          "ArrowRight",
-                          "Delete",
-                          "Home",
-                          "End",
-                        ];
-                        const key = e.key;
-                        const regex = /^[\p{L}\p{N}\s.-]*$/u;
-
-                        if (allowedKeys.includes(key)) return;
-
-                        if (!regex.test(key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      className="w-full appearance-none bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
-                      type="text"
-                      placeholder={translateds("promocode_pl")}
-                    />
-                  </div>
-                  <PrimaryButton
+            {/* Promo Code Section - Only show if competition has promo codes */}
+            {competitionDetail?.promo_codes && competitionDetail.promo_codes.length > 0 && (
+              <div>
+                <div className="pt-[40px] text-base">
+                  <button
                     type="button"
-                    className="col-span-1"
-                    onClick={handleSubmitPromoCode}
+                    onClick={() => setShowPromoCode(!showPromoCode)}
+                    className="text-base !font-poppins text-[#53C5D7] hover:text-[#0B98A1] transition-colors cursor-pointer"
                   >
-                    {translateds("Apply")}
-                  </PrimaryButton>
+                    {translateds("promocode_have")}
+                  </button>
                 </div>
-              )}
-            </div>
+                {showPromoCode && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px] mt-[20px]">
+                    <div className="col-span-2">
+                      <input
+                        onChange={handleChangePromoCode}
+                        onKeyDown={(e) => {
+                          const allowedKeys = [
+                            "Backspace",
+                            "Tab",
+                            "Enter",
+                            "ArrowLeft",
+                            "ArrowRight",
+                            "Delete",
+                            "Home",
+                            "End",
+                          ];
+                          const key = e.key;
+                          const regex = /^[\p{L}\p{N}\s.-]*$/u;
+
+                          if (allowedKeys.includes(key)) return;
+
+                          if (!regex.test(key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                        className="w-full appearance-none bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
+                        type="text"
+                        placeholder={translateds("promocode_pl")}
+                      />
+                    </div>
+                    <PrimaryButton
+                      type="button"
+                      className="col-span-1"
+                      onClick={handleSubmitPromoCode}
+                    >
+                      {translateds("Apply")}
+                    </PrimaryButton>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="flex justify-between mt-[43px]">
               <span className="text-[#FFFFFF99]">{translateds("Total")}:</span>
@@ -1187,9 +1199,8 @@ const BuyTicketForm = ({
 
                   <label className="text-sm">
                     <span className="text-[#53C5D7] mr-1">
-                      {translateds("race_condition_agree")}
+                      {registrationTranslations.registration_terms_agree || translateds("race_condition_agree")}
                     </span>
-                    {/* ilə razıyam */}
                   </label>
                 </div>
                 {form.formState.errors.terms_accepted && (

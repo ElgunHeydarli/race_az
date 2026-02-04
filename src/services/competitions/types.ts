@@ -88,6 +88,14 @@ export type FormConfig = {
   terms_accepted?: FormFieldConfig;
 };
 
+export type PromoCode = {
+  id: number;
+  code: string;
+  discount_type: string;
+  discount_value: number;
+  active: boolean;
+};
+
 export type Competition = {
   id: number;
   name: string;
@@ -111,6 +119,7 @@ export type Competition = {
   gallery_items: GalleryItem[];
   available_products?: AvailableProduct[];
   form_config?: FormConfig;
+  promo_codes?: PromoCode[];
   status: boolean;
   distance: string;
   map_link: string;

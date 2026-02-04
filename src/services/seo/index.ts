@@ -29,3 +29,9 @@ export const useGetSeoByKey = (key: string) => {
     ['seo', key]
   );
 };
+
+// Export new SEO services
+export * from './seoSettings';
+export * from './seoPage';
+export * from './schema';
+export * from './redirects';
