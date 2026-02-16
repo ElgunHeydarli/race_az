@@ -6,7 +6,7 @@ import { useChangeLang } from '@/hooks/useChangeLang';
 export type DeliveryTypeItem = {
   id: number;
   name: string;
-  price?: number;
+  price: number;
 };
 
 export interface CountriesForDeliveryForm {
@@ -20,11 +20,6 @@ export type DeliveryProps = {
   setOrderValues: any;
   onDeliveryFeeChange?: (fee: number) => void;
   onRequiresAddress?: (requires: boolean) => void;
-};
-
-const parsePriceFromName = (name: string): number => {
-  const match = name.match(/\+(\d+(?:\.\d+)?)\s*AZN/i);
-  return match ? parseFloat(match[1]) : 0;
 };
 
 const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange, onRequiresAddress }: DeliveryProps) => {
@@ -55,16 +50,12 @@ const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange, onRequires
       delivery_type_id: t.id,
     });
 
-    const fee = t.price ?? parsePriceFromName(t.name);
-    onDeliveryFeeChange?.(fee);
-
-    const requiresAddress = fee > 0;
-    onRequiresAddress?.(requiresAddress);
+    onDeliveryFeeChange?.(t.price);
+    onRequiresAddress?.(t.price > 0);
   };
 
   const selectedType = types.find((t) => t.id === selectedDeliveryId);
-  const selectedFee = selectedType ? (selectedType.price ?? parsePriceFromName(selectedType.name)) : 0;
-  const requiresAddress = selectedFee > 0;
+  const requiresAddress = selectedType ? selectedType.price > 0 : false;
 
   return (
     <>
@@ -85,7 +76,9 @@ const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange, onRequires
                   ? 'bg-[#25262A] border-[#8BEAF9] border text-[#8BEAF9]'
                   : 'bg-[#25262A] border-transparent border text-white/60 hover:border-white/10'
                   }`}>
-                <span className="text-sm md:text-base">{t.name}</span>
+                <span className="text-sm md:text-base">
+                  {t.name}{t.price > 0 ? ` (+${t.price} AZN)` : ''}
+                </span>
                 <div className="ml-auto">
                   <div className={`w-5 h-5 rounded-full border-2 ${isActive ? 'border-[#8BEAF9]' : 'border-[#FFFFFF3D]'} flex items-center justify-center`}>
                     {isActive && <div className="w-3 h-3 rounded-full bg-[#8BEAF9]" />}
