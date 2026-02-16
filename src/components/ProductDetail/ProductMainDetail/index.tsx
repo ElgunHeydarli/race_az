@@ -213,6 +213,11 @@ const ProductMainDetail = () => {
                 <p className="text-2xl text-white">
                   {productDetail?.price} AZN
                 </p>
+                {productDetail?.titles?.[0]?.subtitle && (
+                  <p className="text-sm text-white/60 mt-3">
+                    {productDetail.titles[0].subtitle}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-3">
