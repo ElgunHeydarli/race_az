@@ -1,5 +1,4 @@
 import { OrderItem, useBasket } from '@/hooks/useBasket';
-import { CreditCard } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import PromoCodeForm from './PromoCodeForm';
 import { PromoResponse } from './types';
@@ -12,12 +11,14 @@ import { useNavigate } from 'react-router';
 import Delivery from './Delivery';
 
 const OrderDetail = () => {
-  const [activeMethod, setActiveMethod] = useState<'cash' | 'cart' | ''>('');
   const { basket, removeFromBasket, clearBasket } = useBasket();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const navigate = useNavigate();
   const [discountResponse, setDiscountResponse] =
     useState<null | PromoResponse>(null);
+  const [deliveryFee, setDeliveryFee] = useState(0);
+  const [requiresAddress, setRequiresAddress] = useState(false);
+  const [showPromoCode, setShowPromoCode] = useState(false);
 
   const orderItems: OrderItem[] = basket.map((item) => ({
     product_id: item.id,
@@ -35,7 +36,7 @@ const OrderDetail = () => {
     country_id: '',
     unvan: '',
     comment: '',
-    payment_method: 'cash',
+    payment_method: 'cart',
     accept_rules: true,
     promo_code: '',
   });
@@ -53,11 +54,16 @@ const OrderDetail = () => {
   };
 
   const handleCheckout = async () => {
+    if (requiresAddress && !orderValues.unvan.trim()) {
+      toast.error(translateds('Address_t') || 'Çatdırılma ünvanını daxil edin');
+      return;
+    }
+
     setIsCheckingOut(true);
     try {
       const orderData = {
         ...orderValues,
-        payment_method: activeMethod,
+        payment_method: 'cart',
         items: orderItems,
       };
 
@@ -65,11 +71,9 @@ const OrderDetail = () => {
 
       if (response.data.status === 'success') {
         if (response.data.redirect_url) {
-          // Online ödeme varsa direkt yönlendir
           window.location.href = response.data.redirect_url;
           return;
         } else {
-          // Online ödeme yoksa sipariş başarı sayfasına git
           clearBasket();
           navigate('/order-success');
           return;
@@ -128,14 +132,6 @@ const OrderDetail = () => {
     setOrderValues({
       ...orderValues,
       [name]: value,
-    });
-  };
-
-  const handlePaymentMethodChange = (method: 'cash' | 'cart') => {
-    setActiveMethod(method);
-    setOrderValues({
-      ...orderValues,
-      payment_method: method,
     });
   };
 
@@ -210,50 +206,27 @@ const OrderDetail = () => {
               <Delivery
                 orderValues={orderValues}
                 setOrderValues={setOrderValues}
+                onDeliveryFeeChange={setDeliveryFee}
+                onRequiresAddress={setRequiresAddress}
               />
               <div className="border-b py-5 md:py-[28px] border-b-[#FFFFFF14] pb-[28px]">
-                <div>
-                  <h3 className="text-[#FFFFFF80] !font-poppins pb-4 md:pb-[20px]">
-                    {translateds('Payment_type')}
-                  </h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-[20px]">
-                  <button
-                    onClick={() => handlePaymentMethodChange('cart')}
-                    className={`flex cursor-pointer mb-[16px] items-center gap-4 p-[15px] rounded-full transition-all duration-300 ${activeMethod === 'cart'
-                      ? 'bg-[#25262A] border-[#8BEAF9] border text-[#8BEAF9]'
-                      : 'bg-[#25262A] border-transparent border text-white/60 hover:border-white/10'
-                      }`}
-                  >
-                    <CreditCard
-                      className={`w-6 h-6 ${activeMethod === 'cart'
-                        ? 'text-[#8BEAF9]'
-                        : 'text-white/60'
-                        }`}
+                <button
+                  type="button"
+                  onClick={() => setShowPromoCode(!showPromoCode)}
+                  className="text-base !font-poppins text-[#53C5D7] hover:text-[#0B98A1] transition-colors cursor-pointer"
+                >
+                  {translateds('promocode_have')}
+                </button>
+                {showPromoCode && (
+                  <div className="mt-4">
+                    <PromoCodeForm
+                      orderItems={orderItems}
+                      setDiscountResponse={setDiscountResponse}
+                      onPromoCodeApplied={handlePromoCodeApplied}
                     />
-                    <span className="text-base">
-                      {translateds('online_card')}
-                    </span>
-                    <div className="ml-auto">
-                      <div
-                        className={`w-5 h-5 rounded-full border-2 ${activeMethod === 'cart'
-                          ? 'border-[#8BEAF9]'
-                          : 'border-[#FFFFFF3D]'
-                          } flex items-center justify-center`}
-                      >
-                        {activeMethod === 'cart' && (
-                          <div className="w-3 h-3 rounded-full bg-[#8BEAF9]" />
-                        )}
-                      </div>
-                    </div>
-                  </button>
-                </div>
+                  </div>
+                )}
               </div>
-              <PromoCodeForm
-                orderItems={orderItems}
-                setDiscountResponse={setDiscountResponse}
-                onPromoCodeApplied={handlePromoCodeApplied}
-              />
             </div>
           </div>
           <div className="col-span-12 lg:col-span-4 mt-6 lg:mt-0">
@@ -266,6 +239,7 @@ const OrderDetail = () => {
                 originalTotal={originalTotal}
                 discount={discount}
                 discountedTotal={discountedTotal}
+                deliveryFee={deliveryFee}
                 currency="AZN"
                 onCheckout={handleCheckout}
                 isLoading={isCheckingOut}

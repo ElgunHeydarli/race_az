@@ -65,8 +65,18 @@ export type FormFieldConfig = {
   enabled: boolean;
   label?: string;
   label_az?: string;
+  label_en?: string;
+  label_ru?: string;
   placeholder?: string;
   placeholder_az?: string;
+  placeholder_en?: string;
+  placeholder_ru?: string;
+  hint_az?: string;
+  hint_en?: string;
+  hint_ru?: string;
+  text_az?: string;
+  text_en?: string;
+  text_ru?: string;
 };
 
 export type FormConfig = {

@@ -65,6 +65,14 @@
   padding-bottom: 28px;
   text-align: center;
 }
+.page-title {
+  color: #fff;
+  font-size: 32px;
+  line-height: 36px;
+  font-weight: 500;
+  padding-bottom: 28px;
+  text-align: center;
+}
 
 @media only screen and (max-width: 568px) {
   .in-map {
@@ -274,6 +282,13 @@ textarea:disabled {
     text-align: center;
   }
   .competitions-page-title {
+    color: #fff;
+    font-size: 28px;
+    line-height: 32px;
+    padding-bottom: 24px;
+    text-align: center;
+  }
+  .page-title {
     color: #fff;
     font-size: 28px;
     line-height: 32px;

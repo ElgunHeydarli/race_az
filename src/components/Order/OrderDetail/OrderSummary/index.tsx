@@ -5,6 +5,7 @@ interface OrderSummaryProps {
   originalTotal: string | number;
   discount: string | number;
   discountedTotal: string | number;
+  deliveryFee?: number;
   currency?: string;
   onCheckout: () => void;
   isLoading?: boolean;
@@ -14,6 +15,7 @@ export default function OrderSummary({
   originalTotal,
   discount,
   discountedTotal,
+  deliveryFee = 0,
   currency = 'AZN',
   onCheckout,
   isLoading = false,
@@ -23,6 +25,10 @@ export default function OrderSummary({
       typeof price === 'string' ? Number.parseFloat(price) : price;
     return numPrice.toFixed(2);
   };
+
+  const finalTotal = (
+    (typeof discountedTotal === 'string' ? parseFloat(discountedTotal) : discountedTotal) + deliveryFee
+  ).toFixed(2);
 
   return (
     <div className="flex flex-col gap-4 pt-6">
@@ -38,10 +44,18 @@ export default function OrderSummary({
           {formatPrice(discount)} {currency}
         </span>
       </div>
+      {deliveryFee > 0 && (
+        <div className="flex items-center justify-between text-[#FFFFFF99] text-sm md:text-base">
+          <span>{translateds('delivery_t')}:</span>
+          <span>
+            {formatPrice(deliveryFee)} {currency}
+          </span>
+        </div>
+      )}
       <div className="flex items-center justify-between text-[#8FEDA0] text-sm md:text-base">
         <span>{translateds('Total')}:</span>
         <span>
-          {formatPrice(discountedTotal)} {currency}
+          {finalTotal} {currency}
         </span>
       </div>
       <PrimaryButton onClick={onCheckout} className="" disabled={isLoading}>

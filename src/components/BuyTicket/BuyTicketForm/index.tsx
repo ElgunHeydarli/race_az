@@ -14,7 +14,7 @@ import { Calendar } from "lucide-react";
 import BaseCalendar from "../BaseCalendar";
 import { formSchema, FormValues } from "./form-schema";
 import axios from "axios";
-import { useRegistrationTranslations } from "@/hooks/useRegistrationTranslations";
+import { useChangeLang } from "@/hooks/useChangeLang";
 
 const BuyTicketForm = ({
   competitionDetail,
@@ -23,8 +23,8 @@ const BuyTicketForm = ({
 }) => {
   const promo_applied = translateds("promo_applied");
   
-  // Fetch registration-specific translations
-  const { translations: registrationTranslations } = useRegistrationTranslations();
+  // Get current language
+  const { lang } = useChangeLang();
 
   // Form config helpers
   const formConfig = competitionDetail?.form_config || {};
@@ -36,12 +36,22 @@ const BuyTicketForm = ({
 
   const getFieldLabel = (fieldName: keyof FormConfig, defaultLabel: string): string => {
     const config = formConfig[fieldName];
-    return config?.label_az || config?.label || defaultLabel;
+    return config?.[`label_${lang}` as keyof typeof config] as string || config?.label || defaultLabel;
   };
 
   const getFieldPlaceholder = (fieldName: keyof FormConfig, defaultPlaceholder: string): string => {
     const config = formConfig[fieldName];
-    return config?.placeholder_az || config?.placeholder || defaultPlaceholder;
+    return config?.[`placeholder_${lang}` as keyof typeof config] as string || config?.placeholder || defaultPlaceholder;
+  };
+
+  const getFieldHint = (fieldName: keyof FormConfig): string | undefined => {
+    const config = formConfig[fieldName];
+    return config?.[`hint_${lang}` as keyof typeof config] as string | undefined;
+  };
+
+  const getFieldText = (fieldName: keyof FormConfig, defaultText: string): string => {
+    const config = formConfig[fieldName];
+    return config?.[`text_${lang}` as keyof typeof config] as string || config?.text_az || defaultText;
   };
 
   const [promoCode, setPromoCode] = useState<string>("");
@@ -63,6 +73,8 @@ const BuyTicketForm = ({
   const [raceNumber, setRaceNumber] = React.useState<string>("");
   const [resultat, setResultat] = React.useState<string>("");
   const [showPromoCode, setShowPromoCode] = React.useState<boolean>(false);
+
+  const itraHintText = getFieldHint("itra_code") || translateds("itra_code_have");
 
   // Products state
   type SelectedProduct = {
@@ -521,7 +533,7 @@ const BuyTicketForm = ({
               <div className="mt-[20px]">
                 {(isFieldEnabled("itra_code") || isFieldEnabled("team_name")) && (
                   <span className="text-[#FFFFFF80]  inline-block mb-[12px] text-[12px]">
-                    *{translateds("itra_code_have")}
+                    *{itraHintText}
                   </span>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-[10px] lg:gap-[20px] w-full">
@@ -570,11 +582,6 @@ const BuyTicketForm = ({
                       {form.formState.errors.itra_code && (
                         <p className="text-red-400 text-xs mt-1">
                           {form.formState.errors.itra_code.message}
-                        </p>
-                      )}
-                      {registrationTranslations.registration_itra_hint && (
-                        <p className="text-[#FFFFFF99] text-xs mt-2">
-                          {registrationTranslations.registration_itra_hint}
                         </p>
                       )}
                     </div>
@@ -1124,8 +1131,8 @@ const BuyTicketForm = ({
                 </div>
               )}
 
-            {/* Promo Code Section - Only show if competition has promo codes */}
-            {competitionDetail?.promo_codes && competitionDetail.promo_codes.length > 0 && (
+            {/* Promo Code Section - Only show if enabled in form_config */}
+            {isFieldEnabled("promo_code") && (
               <div>
                 <div className="pt-[40px] text-base">
                   <button
@@ -1199,7 +1206,7 @@ const BuyTicketForm = ({
 
                   <label className="text-sm">
                     <span className="text-[#53C5D7] mr-1">
-                      {registrationTranslations.registration_terms_agree || translateds("race_condition_agree")}
+                      {getFieldText("terms_accepted", translateds("race_condition_agree"))}
                     </span>
                   </label>
                 </div>
