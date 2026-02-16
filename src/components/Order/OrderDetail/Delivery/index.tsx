@@ -19,10 +19,9 @@ export type DeliveryProps = {
   orderValues: any;
   setOrderValues: any;
   onDeliveryFeeChange?: (fee: number) => void;
-  onRequiresAddress?: (requires: boolean) => void;
 };
 
-const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange, onRequiresAddress }: DeliveryProps) => {
+const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange }: DeliveryProps) => {
   const [selectedDeliveryId, setSelectedDeliveryId] = useState<number | null>(null);
   const { lang } = useChangeLang();
   const [types, setTypes] = React.useState<DeliveryTypeItem[]>([]);
@@ -51,11 +50,9 @@ const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange, onRequires
     });
 
     onDeliveryFeeChange?.(t.price);
-    onRequiresAddress?.(t.price > 0);
   };
 
-  const selectedType = types.find((t) => t.id === selectedDeliveryId);
-  const requiresAddress = selectedType ? selectedType.price > 0 : false;
+  const showAddress = selectedDeliveryId !== null;
 
   return (
     <>
@@ -89,7 +86,7 @@ const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange, onRequires
           })}
         </div>
 
-        {requiresAddress && (
+        {showAddress && (
           <div className="mt-4">
             <input
               className="w-full bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
