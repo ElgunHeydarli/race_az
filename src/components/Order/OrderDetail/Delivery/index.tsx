@@ -19,9 +19,10 @@ export type DeliveryProps = {
   orderValues: any;
   setOrderValues: any;
   onDeliveryFeeChange?: (fee: number) => void;
+  onRequiresAddress?: (requires: boolean) => void;
 };
 
-const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange }: DeliveryProps) => {
+const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange, onRequiresAddress }: DeliveryProps) => {
   const [selectedDeliveryId, setSelectedDeliveryId] = useState<number | null>(null);
   const { lang } = useChangeLang();
   const [types, setTypes] = React.useState<DeliveryTypeItem[]>([]);
@@ -50,9 +51,14 @@ const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange }: Delivery
     });
 
     onDeliveryFeeChange?.(t.price);
+    const needsAddress = t.price > 0 || /ünvan|çatdır|address|delivery|доставк/i.test(t.name);
+    onRequiresAddress?.(needsAddress);
   };
 
-  const showAddress = selectedDeliveryId !== null;
+  const selectedType = types.find((t) => t.id === selectedDeliveryId);
+  const isAddressDelivery = selectedType
+    ? selectedType.price > 0 || /ünvan|çatdır|address|delivery|доставк/i.test(selectedType.name)
+    : false;
 
   return (
     <>
@@ -86,7 +92,7 @@ const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange }: Delivery
           })}
         </div>
 
-        {showAddress && (
+        {isAddressDelivery && (
           <div className="mt-4">
             <input
               className="w-full bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"

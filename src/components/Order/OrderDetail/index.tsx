@@ -17,6 +17,7 @@ const OrderDetail = () => {
   const [discountResponse, setDiscountResponse] =
     useState<null | PromoResponse>(null);
   const [deliveryFee, setDeliveryFee] = useState(0);
+  const [requiresAddress, setRequiresAddress] = useState(false);
   const [showPromoCode, setShowPromoCode] = useState(false);
 
   const orderItems: OrderItem[] = basket.map((item) => ({
@@ -53,7 +54,7 @@ const OrderDetail = () => {
   };
 
   const handleCheckout = async () => {
-    if (!orderValues.unvan.trim()) {
+    if (requiresAddress && !orderValues.unvan.trim()) {
       toast.error(translateds('Address_t') || 'Çatdırılma ünvanını daxil edin');
       return;
     }
@@ -206,6 +207,7 @@ const OrderDetail = () => {
                 orderValues={orderValues}
                 setOrderValues={setOrderValues}
                 onDeliveryFeeChange={setDeliveryFee}
+                onRequiresAddress={setRequiresAddress}
               />
               <div className="border-b py-5 md:py-[28px] border-b-[#FFFFFF14] pb-[28px]">
                 <button
