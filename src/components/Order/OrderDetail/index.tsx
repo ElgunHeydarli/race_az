@@ -25,6 +25,7 @@ const OrderDetail = () => {
     quantity: item.quantity,
     color_id: item.color.id,
     size_id: item.size?.id ?? null,
+    variant_id: item.variant_id,
   }));
 
   const [orderValues, setOrderValues] = useState({
