@@ -105,7 +105,7 @@ const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange, onRequires
                   seher: e.target.value,
                 });
               }}
-              placeholder={translateds('city') || 'Şəhər'}
+              placeholder={translateds('seher') || 'Şəhər'}
             />
             <input
               className="w-full bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
