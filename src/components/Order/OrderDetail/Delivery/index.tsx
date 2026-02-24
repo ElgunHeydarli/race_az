@@ -93,7 +93,20 @@ const Delivery = ({ orderValues, setOrderValues, onDeliveryFeeChange, onRequires
         </div>
 
         {isAddressDelivery && (
-          <div className="mt-4">
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input
+              className="w-full bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
+              type="text"
+              name="seher"
+              value={orderValues.seher}
+              onChange={(e) => {
+                setOrderValues({
+                  ...orderValues,
+                  seher: e.target.value,
+                });
+              }}
+              placeholder={translateds('city') || 'Şəhər'}
+            />
             <input
               className="w-full bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B98A1] duration-300"
               type="text"
