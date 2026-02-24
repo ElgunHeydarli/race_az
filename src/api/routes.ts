@@ -5,6 +5,7 @@ export const apiMainRoutes = {
   getVolunteers: '/volunteers',
   getPartners: '/partners',
   getCompetitions: '/competitions',
+  getHomepageCompetitions: '/competitions/homepage',
   getLogos: '/logos',
   getAboutHeroes: '/about-heroes',
   getContacts:'/contacts',

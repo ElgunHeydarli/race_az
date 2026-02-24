@@ -176,36 +176,38 @@ const GeneralInfo = () => {
           />
         </div>
       </section>
-      <section className=" py-[100px]">
-        <div className="main-container">
-          <div className="flex lg:flex-row flex-col bg-[#FFFFFF0D] rounded-[12px] items-center">
-            <div className="text-[#FFFFFF] ml-[48px] ">
-              <h3 className="c-mp-text">
-                {competitionDetail?.name} {translateds("map_text")}
-              </h3>
+      {competitionDetail?.map_link && (
+        <section className=" py-[100px]">
+          <div className="main-container">
+            <div className="flex lg:flex-row flex-col bg-[#FFFFFF0D] rounded-[12px] items-center">
+              <div className="text-[#FFFFFF] ml-[48px] ">
+                <h3 className="c-mp-text">
+                  {competitionDetail?.name} {translateds("map_text")}
+                </h3>
+              </div>
+              {competitionDetail?.map_link?.startsWith("<iframe") ? (
+                <div className="in-map">
+                  <div
+                    className="in-maplink"
+                    dangerouslySetInnerHTML={{
+                      __html: competitionDetail?.map_link ?? "",
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="w-full p-[20px] h-[500px] lg:w-2/3 aspect-video">
+                  <iframe
+                    className="rounded-[12px] w-full h-full"
+                    src={competitionDetail?.map_link}
+                    loading="lazy"
+                    allowFullScreen
+                  />
+                </div>
+              )}
             </div>
-            {competitionDetail?.map_link?.startsWith("<iframe") ? (
-              <div className="in-map">
-                <div
-                  className="in-maplink"
-                  dangerouslySetInnerHTML={{
-                    __html: competitionDetail?.map_link ?? "",
-                  }}
-                />
-              </div>
-            ) : (
-              <div className="w-full p-[20px] h-[500px] lg:w-2/3 aspect-video">
-                <iframe
-                  className="rounded-[12px] w-full h-full"
-                  src={competitionDetail?.map_link}
-                  loading="lazy"
-                  allowFullScreen
-                />
-              </div>
-            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 };

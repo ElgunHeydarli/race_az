@@ -6,6 +6,8 @@ export type Partner = Entity<{
   image: string;
   image_alt: string;
   url: string;
+  status: boolean;
+  competition_status: boolean;
   competitions: Competition[];
 }>;
 

@@ -4,14 +4,13 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SectionTitle from '@/components/UI/SectionTitle';
 import 'swiper/css';
 import RaceCard from '@/components/UI/RaceCard';
-import { useGetCompetitions } from '@/services/competitions';
+import { useGetHomepageCompetitions } from '@/services/competitions';
 import { translateds } from '@/context/TranslateContext';
 
 const UpcomingRaces = () => {
   const sectionRef = useRef(null);
-  const { data } = useGetCompetitions();
-  // Yalnız is_race_az_event = true olan yarışlar göstərilir
-  const competitionsData = data?.data?.filter((item) => item.is_race_az_event === true);
+  const { data } = useGetHomepageCompetitions();
+  const competitionsData = data?.data;
   const [isMobile, setIsMobile] = useState(false);
 
   const held_competitions = translateds('held_competitions');

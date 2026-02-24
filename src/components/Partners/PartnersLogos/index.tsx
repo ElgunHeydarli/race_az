@@ -17,7 +17,7 @@ const PartnersLogos: React.FC<Props> = ({ customStyle }) => {
       </h2> */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
         {data &&
-          data.data.map((item: Partner) => (
+          data.data.filter((item: Partner) => item.status !== false).map((item: Partner) => (
             <div
               onClick={() => {
                 window.open(item?.url || '', '_blank');

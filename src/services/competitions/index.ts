@@ -14,6 +14,12 @@ export const useGetCompetitions = () => {
   return useFetch<BaseCompetitionResponse>(competitionApi.getAll());
 };
 
+export const useGetHomepageCompetitions = () => {
+  return useFetch<BaseCompetitionResponse>(
+    pathToUrl(apiMainRoutes.getHomepageCompetitions)
+  );
+};
+
 export const useGetCompetitionDetail = (slug: string) => {
   return useFetch<BaseCompetitionDeailResponse>(competitionApi.getDetail(slug));
 };
