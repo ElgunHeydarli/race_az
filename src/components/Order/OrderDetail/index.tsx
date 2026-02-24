@@ -35,7 +35,6 @@ const OrderDetail = () => {
     number_prefix: '+994',
     number: '',
     country_id: '',
-    seher: '',
     unvan: '',
     comment: '',
     payment_method: 'cart',
