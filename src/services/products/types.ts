@@ -21,6 +21,16 @@ export type Image = Entity<{
   path: string;
 }>;
 
+export type Variant = {
+  id: number;
+  color_id: number;
+  size_id: number;
+  stock: number;
+  is_available: boolean;
+  color: Color;
+  size: Size;
+};
+
 export type Product = Entity<{
   id: number;
   name: string;
@@ -36,6 +46,7 @@ export type Product = Entity<{
   order: number;
   colors: Color[];
   sizes: Size[];
+  variants?: Variant[];
   images: Image[];
   titles: FaqTitle[];
   created_at: string;

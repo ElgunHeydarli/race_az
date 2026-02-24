@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useGetProductDetail } from '@/services/products';
-import type { Color, Size } from '@/services/products/types';
+import type { Color, Size, Variant } from '@/services/products/types';
 import {
   ChevronDown,
   ChevronLeft,
@@ -9,7 +9,7 @@ import {
   ChevronUp,
   ShoppingCart,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import StockIndicator from '../StockIndicator';
 import { BasketItem, useBasket } from '@/hooks/useBasket';
@@ -22,18 +22,107 @@ const ProductMainDetail = () => {
   const { data: productDetailData } = useGetProductDetail(id ?? '');
   const { basket, removeFromBasket, addItem } = useBasket();
   const productDetail = productDetailData?.data;
-  const isInBasket = basket.some((item) => item.id === Number(id));
+
+  const hasVariants = (productDetail?.variants?.length ?? 0) > 0;
+
+  // Variantlardan unikal rəngləri çıxar
+  const uniqueColors = useMemo(() => {
+    if (!hasVariants) return productDetail?.colors ?? [];
+    const colorMap = new Map<number, Color>();
+    productDetail?.variants?.forEach((v) => {
+      if (!colorMap.has(v.color.id)) {
+        colorMap.set(v.color.id, v.color);
+      }
+    });
+    return Array.from(colorMap.values());
+  }, [productDetail?.variants, productDetail?.colors, hasVariants]);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [selectedColor, setSelectedColor] = useState<Color | null>(
-    productDetail?.colors?.[0] ?? null
-  );
-  const [selectedSize, setSelectedSize] = useState<Size | null>(
-    productDetail?.sizes?.[0] ?? null
-  );
+  const [selectedColor, setSelectedColor] = useState<Color | null>(null);
+  const [selectedSize, setSelectedSize] = useState<Size | null>(null);
+
+  // İlk rəngi seç
+  useEffect(() => {
+    if (uniqueColors.length > 0 && !selectedColor) {
+      setSelectedColor(uniqueColors[0]);
+    }
+  }, [uniqueColors]);
+
+  // Seçilmiş rəngə görə mövcud ölçüləri filtr et (size: null olanları keç)
+  const availableSizes = useMemo(() => {
+    if (!hasVariants) return productDetail?.sizes ?? [];
+    if (!selectedColor) return [];
+    return (
+      productDetail?.variants
+        ?.filter((v) => v.color_id === selectedColor.id && v.is_available && v.stock > 0 && v.size !== null)
+        .map((v) => v.size) ?? []
+    );
+  }, [productDetail?.variants, productDetail?.sizes, selectedColor, hasVariants]);
+
+  // Bütün ölçülər (disabled olanlar daxil, size: null olanları keç)
+  const allSizesForColor = useMemo(() => {
+    if (!hasVariants) return productDetail?.sizes ?? [];
+    if (!selectedColor) return [];
+    const sizeMap = new Map<number, Size>();
+    productDetail?.variants
+      ?.filter((v) => v.color_id === selectedColor.id && v.size !== null)
+      .forEach((v) => {
+        if (!sizeMap.has(v.size.id)) {
+          sizeMap.set(v.size.id, v.size);
+        }
+      });
+    return Array.from(sizeMap.values());
+  }, [productDetail?.variants, productDetail?.sizes, selectedColor, hasVariants]);
+
+  // Rəng dəyişdikdə ölçünü sıfırla
+  useEffect(() => {
+    if (hasVariants && availableSizes.length > 0) {
+      setSelectedSize(availableSizes[0]);
+    } else if (hasVariants) {
+      setSelectedSize(null);
+    }
+  }, [selectedColor]);
+
+  // Fallback: variantsız məhsullar üçün ilk ölçünü seç
+  useEffect(() => {
+    if (!hasVariants && productDetail?.sizes?.length && !selectedSize) {
+      setSelectedSize(productDetail.sizes[0]);
+    }
+  }, [productDetail?.sizes]);
+
+  // Seçilmiş variant
+  const selectedVariant = useMemo((): Variant | null => {
+    if (!hasVariants || !selectedColor) return null;
+    if (allSizesForColor.length === 0) {
+      // Ölçüsüz variant
+      return productDetail?.variants?.find(
+        (v) => v.color_id === selectedColor.id
+      ) ?? null;
+    }
+    if (!selectedSize) return null;
+    return productDetail?.variants?.find(
+      (v) => v.color_id === selectedColor.id && v.size_id === selectedSize.id
+    ) ?? null;
+  }, [productDetail?.variants, selectedColor, selectedSize, hasVariants, allSizesForColor]);
+
+  // Stok hesablaması
+  const currentStock = useMemo(() => {
+    if (hasVariants) {
+      return selectedVariant?.stock ?? 0;
+    }
+    return selectedColor?.stock ?? 0;
+  }, [hasVariants, selectedVariant, selectedColor]);
+
+  const isAvailable = hasVariants
+    ? (selectedVariant?.is_available ?? false) && currentStock > 0
+    : currentStock > 0;
+
+  // Səbətdə olub-olmadığını yoxla (variant_id ilə)
+  const isInBasket = hasVariants
+    ? basket.some((item) => item.id === Number(id) && item.variant_id === selectedVariant?.id)
+    : basket.some((item) => item.id === Number(id));
 
   const images = productDetail?.images ?? [];
-  const selectedStock = selectedColor?.stock ?? 0;
 
   const thumbnailsRef = useRef<HTMLDivElement>(null);
   const [showScrollButtons, setShowScrollButtons] = useState(false);
@@ -89,13 +178,22 @@ const ProductMainDetail = () => {
       return;
     }
 
-    if (productDetail?.sizes?.length && !selectedSize) {
+    if (allSizesForColor.length > 0 && !selectedSize) {
       toast.error(translateds("olcu_secilmelidir"));
       return;
     }
 
+    if (hasVariants && !selectedVariant) {
+      toast.error(translateds("stokda_yoxdur") || "Stokda yoxdur");
+      return;
+    }
+
     if (isInBasket) {
-      removeFromBasket(Number(id));
+      if (hasVariants && selectedVariant) {
+        removeFromBasket(Number(id), selectedVariant.id);
+      } else {
+        removeFromBasket(Number(id));
+      }
     } else {
       if (productDetail && selectedColor) {
         const basketItem: BasketItem = {
@@ -107,10 +205,17 @@ const ProductMainDetail = () => {
           quantity: 1,
           color: selectedColor,
           size: selectedSize ? selectedSize : null,
+          variant_id: selectedVariant?.id,
         };
         addItem(basketItem);
       }
     }
+  };
+
+  // Ölçünün mövcud olub-olmadığını yoxla
+  const isSizeAvailable = (size: Size) => {
+    if (!hasVariants) return true;
+    return availableSizes.some((s) => s.id === size.id);
   };
 
   return (
@@ -222,13 +327,12 @@ const ProductMainDetail = () => {
 
               <div className="space-y-3">
                 <label className="text-sm mb-[12px] text-white/60">
-                  {/* first letter is uppercase */}
                   {translateds('color')[0].toUpperCase() +
                     translateds('color').slice(1)}
                   : {selectedColor?.name}
                 </label>
                 <div className="flex gap-2">
-                  {productDetail?.colors?.map((color) => {
+                  {uniqueColors.map((color) => {
                     const hex = color.hex_code.replace('#', '');
                     const r = parseInt(hex.substring(0, 2), 16);
                     const g = parseInt(hex.substring(2, 4), 16);
@@ -254,38 +358,52 @@ const ProductMainDetail = () => {
               </div>
 
               <div className="space-y-3">
-                {productDetail && productDetail?.sizes?.length > 0 && (
+                {allSizesForColor.length > 0 && (
                   <label className="text-sm mb-[12px] text-white/60">
                     Ölçü: {selectedSize?.name}
                   </label>
                 )}
                 <div className="flex flex-wrap gap-2">
-                  {productDetail?.sizes?.map((size) => (
-                    <button
-                      key={size.id}
-                      onClick={() => setSelectedSize(size)}
-                      className={`w-12 h-12 rounded-full flex items-center justify-center text-sm transition-colors ${selectedSize?.id === size.id
-                        ? 'bg-[#04848C] text-white'
-                        : 'bg-[#FFFFFF0D] text-white/60 hover:bg-[#FFFFFF1A]'
+                  {allSizesForColor.map((size) => {
+                    const available = isSizeAvailable(size);
+                    return (
+                      <button
+                        key={size.id}
+                        onClick={() => available && setSelectedSize(size)}
+                        disabled={!available}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center text-sm transition-colors ${
+                          !available
+                            ? 'bg-[#FFFFFF08] text-white/20 cursor-not-allowed line-through'
+                            : selectedSize?.id === size.id
+                            ? 'bg-[#04848C] text-white'
+                            : 'bg-[#FFFFFF0D] text-white/60 hover:bg-[#FFFFFF1A]'
                         }`}>
-                      {size.name}
-                    </button>
-                  ))}
+                        {size.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-              {/* <StockIndicator stock={productDetail ? productDetail.stock : 0} /> */}
+
               {selectedColor && (
-                <StockIndicator stock={selectedStock} />
+                <StockIndicator stock={currentStock} />
               )}
+
               <button
                 onClick={(e) => handleAddToCart(e)}
-                className={`w-full cursor-pointer flex items-center justify-center gap-2 ${isInBasket
-                  ? 'bg-white text-[#0B98A1]'
-                  : ' hover:bg-[#04848C]/90 text-white bg-[#04848C]'
-                  }   py-3 px-4 rounded-lg  transition-colors`}>
+                disabled={!isAvailable}
+                className={`w-full cursor-pointer flex items-center justify-center gap-2 ${
+                  !isAvailable
+                    ? 'bg-gray-600 text-white/40 cursor-not-allowed'
+                    : isInBasket
+                    ? 'bg-white text-[#0B98A1]'
+                    : 'hover:bg-[#04848C]/90 text-white bg-[#04848C]'
+                } py-3 px-4 rounded-lg transition-colors`}>
                 <ShoppingCart className="w-5 h-5" />
                 <span>
-                  {isInBasket
+                  {!isAvailable
+                    ? (translateds('stokda_yoxdur') || 'Stokda yoxdur')
+                    : isInBasket
                     ? translateds('remove_cart')
                     : translateds('add_to_cart')}
                 </span>

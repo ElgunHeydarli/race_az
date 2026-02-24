@@ -4,7 +4,7 @@ import { Trash2 } from 'lucide-react';
 
 interface BasketItemsProps {
   basket: BasketItem[];
-  removeFromBasket: (id: number) => void;
+  removeFromBasket: (id: number, variantId?: number) => void;
 }
 
 const BasketItems = ({ basket, removeFromBasket }: BasketItemsProps) => {
@@ -28,7 +28,7 @@ const BasketItems = ({ basket, removeFromBasket }: BasketItemsProps) => {
         <div className="space-y-6">
           {basket.map((item) => (
             <div
-              key={item.id}
+              key={`${item.id}-${item.variant_id ?? 'nv'}`}
               className="flex items-center gap-4 pb-6 border-b border-[#FFFFFF14] last:border-0 last:pb-0">
               <div className="relative w-[72px] h-[72px] bg-white rounded-lg overflow-hidden shrink-0">
                 <img
@@ -58,7 +58,7 @@ const BasketItems = ({ basket, removeFromBasket }: BasketItemsProps) => {
               </div>
 
               <button
-                onClick={() => removeFromBasket(item.id)}
+                onClick={() => removeFromBasket(item.id, item.variant_id)}
                 className="p-2 cursor-pointer hover:bg-white/5 rounded-full transition-colors">
                 <Trash2 className="w-5 h-5 text-red-500" />
               </button>

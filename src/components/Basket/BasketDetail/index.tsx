@@ -19,6 +19,7 @@ const BasketDetail = () => {
       quantity: item.quantity,
       color_id: item.color.id,
       size_id: item.size?.id ?? null,
+      variant_id: item.variant_id,
     }));
     selectOrderItems([...orderItems]);
     navigate('/order');
@@ -42,7 +43,7 @@ const BasketDetail = () => {
                     main_image={item.image}
                     {...item}
                     price={Number(item.price)}
-                    key={`${item.id}-${item.color?.id ?? 'nc'}-${item.size?.id ?? 'ns'}`}
+                    key={`${item.id}-${item.variant_id ?? `${item.color?.id ?? 'nc'}-${item.size?.id ?? 'ns'}`}`}
                     color={item.color}
                     size={item.size}
                   />

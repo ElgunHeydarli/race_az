@@ -11,6 +11,7 @@ interface IBasketProductCard {
   size: Size | null;
   currency: string;
   color: Color;
+  variant_id?: number;
 }
 
 const BasketProductCard = ({
@@ -21,6 +22,7 @@ const BasketProductCard = ({
   id,
   price,
   quantity,
+  variant_id,
 }: IBasketProductCard) => {
   const { increaseQuantity, removeFromBasket, decreaseQuantity } = useBasket();
   return (
@@ -48,7 +50,7 @@ const BasketProductCard = ({
         </div>
         <div className="flex items-center lg:self-center gap-3">
           <button
-            onClick={() => decreaseQuantity(id)}
+            onClick={() => decreaseQuantity(id, variant_id)}
             className="h-8 w-8 inline-flex cursor-pointer justify-center items-center rounded-full bg-[#FFFFFF1F] hover:bg-white/10">
             <Minus className="w-4 h-4 text-white" />
           </button>
@@ -56,7 +58,7 @@ const BasketProductCard = ({
             {quantity}
           </span>
           <button
-            onClick={() => increaseQuantity(id)}
+            onClick={() => increaseQuantity(id, variant_id)}
             className="h-8 w-8 inline-flex cursor-pointer justify-center items-center rounded-full bg-[#FFFFFF1F] hover:bg-white/10">
             <Plus className="w-4 h-4 text-white" />
           </button>
@@ -66,7 +68,7 @@ const BasketProductCard = ({
             {(price * quantity).toFixed(2)} AZN
           </span>
           <button
-            onClick={() => removeFromBasket(id)}
+            onClick={() => removeFromBasket(id, variant_id)}
             className=" cursor-pointer w-8 h-8 md:w-10 md:h-10 bg-white inline-flex justify-center items-center rounded-full text-[#D60303]">
             <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
           </button>
