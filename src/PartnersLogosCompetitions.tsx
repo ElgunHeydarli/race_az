@@ -30,15 +30,14 @@ const PartnersLogosCompetitions: React.FC<Props> = ({
     const fetchPartnersForCompetition = async () => {
       try {
         const res = await axios.get(
-          `https://admin.race.az/api/partners`,
+          `https://admin.race.az/api/competitions/${competitionId}/partners`,
           {
             headers: { 'Accept-Language': lang },
-            params: { for_competition: true },
             signal: controller.signal,
           },
         );
-        if (res.data?.data && Array.isArray(res.data.data)) {
-          setPartnData(res.data.data);
+        if (res.data?.partners && Array.isArray(res.data.partners)) {
+          setPartnData(res.data.partners);
         }
       } catch (error) {
         if (axios.isCancel(error)) return;

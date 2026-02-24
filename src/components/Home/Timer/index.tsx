@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Countdown from 'react-countdown';
 import TimerBox from './TimerBox';
 import { motion } from 'framer-motion';
-import { useGetCompetitions } from '@/services/competitions';
+import { useGetHomepageCompetitions } from '@/services/competitions';
 import { findNearestFutureRace } from '@/utils/nearestRace';
 
 interface TimerUnit {
@@ -13,7 +13,7 @@ interface TimerUnit {
 const Timer = () => {
   const [targetDate, setTargetDate] = useState<Date | null>(null);
 
-  const { data: allCompetitionsData } = useGetCompetitions();
+  const { data: allCompetitionsData } = useGetHomepageCompetitions();
   const competitions = allCompetitionsData?.data || [];
 
   useEffect(() => {

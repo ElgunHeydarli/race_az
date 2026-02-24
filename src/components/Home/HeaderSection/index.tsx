@@ -4,7 +4,7 @@ import ScrollIndicator from './ScrollIndicator';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { translateds } from '@/context/TranslateContext';
-import { useGetCompetitions } from '@/services/competitions';
+import { useGetHomepageCompetitions } from '@/services/competitions';
 import { Competition } from '@/services/competitions/types';
 import { findNearestFutureRace } from '@/utils/nearestRace';
 
@@ -15,7 +15,7 @@ const HeaderSection = () => {
   const [backgroundImage, setBackgroundImage] = useState<string>('');
   const [mobileImage, setMobileImage] = React.useState<string>('');
 
-  const { data: allCompetitionsData } = useGetCompetitions();
+  const { data: allCompetitionsData } = useGetHomepageCompetitions();
   const competitions = allCompetitionsData?.data || [];
   console.log(backgroundImage, 'backgroundImagebackgroundImage');
   useEffect(() => {
