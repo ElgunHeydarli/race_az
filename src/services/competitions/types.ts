@@ -85,6 +85,7 @@ export type FormConfig = {
   birth_date?: FormFieldConfig;
   gender?: FormFieldConfig;
   itra_code?: FormFieldConfig;
+  individual_or_team?: FormFieldConfig;
   team_name?: FormFieldConfig;
   country_id?: FormFieldConfig;
   email?: FormFieldConfig;

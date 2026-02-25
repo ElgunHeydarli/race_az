@@ -12,6 +12,7 @@ export const formSchema = z.object({
   itra_code: z.string({
     required_error: 'ITRA code is required',
   }),
+  individual_or_team: z.enum(['individual', 'team']).optional().nullable(),
   team_name: z.string({
     required_error: 'Team name is required',
   }),
