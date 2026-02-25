@@ -63,6 +63,7 @@ export type AvailableProduct = {
 
 export type FormFieldConfig = {
   enabled: boolean;
+  order?: number;
   label?: string;
   label_az?: string;
   label_en?: string;

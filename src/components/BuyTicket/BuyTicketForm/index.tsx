@@ -54,6 +54,11 @@ const BuyTicketForm = ({
     return config?.[`text_${lang}` as keyof typeof config] as string || config?.text_az || defaultText;
   };
 
+  const getFieldOrder = (fieldName: keyof FormConfig, defaultOrder: number): number => {
+    const config = formConfig[fieldName];
+    return typeof config?.order === 'number' ? config.order : defaultOrder;
+  };
+
   const [promoCode, setPromoCode] = useState<string>("");
   const [showCalendar, setShowCalendar] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -362,11 +367,11 @@ const BuyTicketForm = ({
                 <h3 className="!font-poppins">{translateds("user_info")}</h3>
               </div>
               <div>
-                <span className="text-[#FFFFFF80]  inline-block mb-[12px] text-[12px]">
-                  *{translateds("english_name")}
-                </span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-[10px] lg:gap-[20px] w-full">
-                  <div>
+                  <span style={{ order: -1 }} className="col-span-full text-[#FFFFFF80] inline-block mb-[2px] text-[12px]">
+                    *{translateds("english_name")}
+                  </span>
+                  <div style={{ order: getFieldOrder('name', 0) * 2 }}>
                     <label
                       htmlFor="name"
                       className="block text-white text-sm mb-2"
@@ -412,7 +417,7 @@ const BuyTicketForm = ({
                       </p>
                     )}
                   </div>
-                  <div>
+                  <div style={{ order: getFieldOrder('surname', 1) * 2 }}>
                     <label
                       htmlFor="surname"
                       className="block text-white text-sm mb-2"
@@ -459,7 +464,7 @@ const BuyTicketForm = ({
                       </p>
                     )}
                   </div>
-                  <div className="relative">
+                  <div className="relative" style={{ order: getFieldOrder('birth_date', 2) * 2 }}>
                     <label
                       htmlFor="birth_date"
                       className="block text-white text-sm mb-2"
@@ -507,7 +512,7 @@ const BuyTicketForm = ({
                     )}
                   </div>
 
-                  <div>
+                  <div style={{ order: getFieldOrder('gender', 3) * 2 }}>
                     <label
                       htmlFor="gender"
                       className="block text-white text-sm mb-2"
@@ -528,17 +533,13 @@ const BuyTicketForm = ({
                       </p>
                     )}
                   </div>
-                </div>
-              </div>
-              <div className="mt-[20px]">
-                {(isFieldEnabled("itra_code") || isFieldEnabled("team_name")) && (
-                  <span className="text-[#FFFFFF80]  inline-block mb-[12px] text-[12px]">
-                    *{itraHintText}
-                  </span>
-                )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-[10px] lg:gap-[20px] w-full">
+                  {(isFieldEnabled("itra_code") || isFieldEnabled("team_name")) && (
+                    <span style={{ order: getFieldOrder('itra_code', 4) * 2 - 1 }} className="col-span-full text-[#FFFFFF80] inline-block mt-[10px] mb-[2px] text-[12px]">
+                      *{itraHintText}
+                    </span>
+                  )}
                   {isFieldEnabled("itra_code") && (
-                    <div>
+                    <div style={{ order: getFieldOrder('itra_code', 4) * 2 }}>
                       <label
                         htmlFor="itra_code"
                         className="block text-white text-sm mb-2"
@@ -587,7 +588,7 @@ const BuyTicketForm = ({
                     </div>
                   )}
                   {isFieldEnabled("individual_or_team") && (
-                    <div>
+                    <div style={{ order: getFieldOrder('individual_or_team', 5) * 2 }}>
                       <label className="block text-white text-sm mb-2">
                         {getFieldLabel("individual_or_team", "Fərdi və ya komanda")}
                       </label>
@@ -626,7 +627,7 @@ const BuyTicketForm = ({
                     </div>
                   )}
                   {isFieldEnabled("team_name") && (
-                    <div>
+                    <div style={{ order: getFieldOrder('team_name', 6) * 2 }}>
                     <label
                       htmlFor="team_name"
                       className="block text-white text-sm mb-2"
@@ -676,7 +677,7 @@ const BuyTicketForm = ({
                   )}
 
                   {isFieldEnabled("country_id") && (
-                    <div>
+                    <div style={{ order: getFieldOrder('country_id', 7) * 2 }}>
                       <label
                         htmlFor="city"
                         className="block text-white text-sm mb-2"
@@ -704,7 +705,7 @@ const BuyTicketForm = ({
                     </div>
                   )}
                   {isFieldEnabled("email") && (
-                  <div>
+                  <div style={{ order: getFieldOrder('email', 8) * 2 }}>
                     <label
                       htmlFor="email"
                       className="block text-white text-sm mb-2"
@@ -728,7 +729,7 @@ const BuyTicketForm = ({
                   </div>
                   )}
                   {isFieldEnabled("phone") && (
-                  <div>
+                  <div style={{ order: getFieldOrder('phone', 9) * 2 }}>
                     <label
                       htmlFor="phone"
                       className="block text-white text-sm mb-2"
