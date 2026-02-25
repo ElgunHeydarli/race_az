@@ -606,7 +606,7 @@ const BuyTicketForm = ({
                             className="hidden"
                             {...form.register("individual_or_team")}
                           />
-                          {translateds("individual") || "Fərdi"}
+                          {{ az: "Fərdi", en: "Individual", ru: "Индивидуальный" }[lang] || "Fərdi"}
                         </label>
                         <label
                           className={`flex-1 cursor-pointer rounded-full py-[16px] px-[18px] text-center text-white duration-300 ${
@@ -621,7 +621,7 @@ const BuyTicketForm = ({
                             className="hidden"
                             {...form.register("individual_or_team")}
                           />
-                          {translateds("team") || "Komanda"}
+                          {{ az: "Komanda", en: "Team", ru: "Команда" }[lang] || "Komanda"}
                         </label>
                       </div>
                     </div>
@@ -830,8 +830,8 @@ const BuyTicketForm = ({
               <div className="mt-[20px]">
                 <div className="grid grid-cols-1 gap-[20px] w-full">
                   {/* logistik */}
-                  {isFieldEnabled("logistics") && competitionDetail?.logistics_services?.logistics
-                    ?.available === true ? (
+                  {isFieldEnabled("logistics") && (formConfig?.logistics ? true : competitionDetail?.logistics_services?.logistics
+                    ?.available === true) ? (
                     <div>
                       <label
                         htmlFor="logistics"
@@ -841,10 +841,6 @@ const BuyTicketForm = ({
                       </label>
                       <select
                         {...form.register("logistics")}
-                        disabled={
-                          !competitionDetail.logistics_services.logistics
-                            .available
-                        }
                         className="w-full appearance-none custom-select  bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none pr-[16px] focus:ring-2 focus:ring-[#0B98A1] duration-300"
                       >
                         <option value="">{translateds("logistik_text")}</option>
@@ -854,8 +850,8 @@ const BuyTicketForm = ({
                     </div>
                   ) : null}
                   {/* cadir kirayesi */}
-                  {isFieldEnabled("tent_rental") && competitionDetail?.logistics_services?.tent_rental
-                    ?.available === true ? (
+                  {isFieldEnabled("tent_rental") && (formConfig?.tent_rental ? true : competitionDetail?.logistics_services?.tent_rental
+                    ?.available === true) ? (
                     <div>
                       <label
                         htmlFor="donation_amount"
@@ -865,10 +861,6 @@ const BuyTicketForm = ({
                       </label>
                       <select
                         {...form.register("tent_rental")}
-                        disabled={
-                          !competitionDetail.logistics_services.tent_rental
-                            .available
-                        }
                         className="w-full appearance-none custom-select  bg-[#FFFFFF14] py-[16px] pl-[18px] rounded-full text-white placeholder:text-gray-400 focus:outline-none pr-[16px] focus:ring-2 focus:ring-[#0B98A1] duration-300"
                       >
                         <option value="">
@@ -880,8 +872,8 @@ const BuyTicketForm = ({
                     </div>
                   ) : null}
 
-                  {isFieldEnabled("donation") && competitionDetail?.logistics_services?.donation
-                    ?.available === true ? (
+                  {isFieldEnabled("donation") && (formConfig?.donation ? true : competitionDetail?.logistics_services?.donation
+                    ?.available === true) ? (
                     <div>
                       <label
                         htmlFor="donation_amount"
@@ -939,10 +931,10 @@ const BuyTicketForm = ({
             </div>
 
             {/* YARIS NOMRESI */}
-            {isFieldEnabled("race_number") && typeof competitionDetail?.logistics_services?.number?.available ===
+            {isFieldEnabled("race_number") && (formConfig?.race_number ? true : (typeof competitionDetail?.logistics_services?.number?.available ===
               "boolean" &&
             competitionDetail?.logistics_services?.number?.available ===
-              true ? (
+              true)) ? (
               <div>
                 <div className="pt-[40px] text-base">
                   <h3 className="text-base !font-poppins">
