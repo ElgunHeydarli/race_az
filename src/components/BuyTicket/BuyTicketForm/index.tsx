@@ -788,6 +788,7 @@ const BuyTicketForm = ({
               <div className="pb-[24px] !font-poppins text-base">
                 <h3 className="!font-poppins">{translateds("race_info")}</h3>
               </div>
+              {isFieldEnabled("distance_id") && (
               <div>
                 <label
                   htmlFor="distance_id"
@@ -825,10 +826,11 @@ const BuyTicketForm = ({
                   )}
                 </div>
               </div>
+              )}
               <div className="mt-[20px]">
                 <div className="grid grid-cols-1 gap-[20px] w-full">
                   {/* logistik */}
-                  {competitionDetail?.logistics_services?.logistics
+                  {isFieldEnabled("logistics") && competitionDetail?.logistics_services?.logistics
                     ?.available === true ? (
                     <div>
                       <label
@@ -852,7 +854,7 @@ const BuyTicketForm = ({
                     </div>
                   ) : null}
                   {/* cadir kirayesi */}
-                  {competitionDetail?.logistics_services?.tent_rental
+                  {isFieldEnabled("tent_rental") && competitionDetail?.logistics_services?.tent_rental
                     ?.available === true ? (
                     <div>
                       <label
@@ -878,7 +880,7 @@ const BuyTicketForm = ({
                     </div>
                   ) : null}
 
-                  {competitionDetail?.logistics_services?.donation
+                  {isFieldEnabled("donation") && competitionDetail?.logistics_services?.donation
                     ?.available === true ? (
                     <div>
                       <label
@@ -937,7 +939,7 @@ const BuyTicketForm = ({
             </div>
 
             {/* YARIS NOMRESI */}
-            {typeof competitionDetail?.logistics_services?.number?.available ===
+            {isFieldEnabled("race_number") && typeof competitionDetail?.logistics_services?.number?.available ===
               "boolean" &&
             competitionDetail?.logistics_services?.number?.available ===
               true ? (
