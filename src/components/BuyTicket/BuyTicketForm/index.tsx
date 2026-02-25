@@ -588,11 +588,11 @@ const BuyTicketForm = ({
                     </div>
                   )}
                   {isFieldEnabled("individual_or_team") && (
-                    <div style={{ order: getFieldOrder('individual_or_team', 5) * 2 }}>
+                    <div style={{ order: getFieldOrder('individual_or_team', 5) * 2 }} className="col-span-full">
                       <label className="block text-white text-sm mb-2">
                         {getFieldLabel("individual_or_team", "Fərdi və ya komanda")}
                       </label>
-                      <div className="flex gap-4">
+                      <div className="flex gap-4 max-w-[400px]">
                         <label
                           className={`flex-1 cursor-pointer rounded-full py-[16px] px-[18px] text-center text-white duration-300 ${
                             form.watch("individual_or_team") === "individual"
