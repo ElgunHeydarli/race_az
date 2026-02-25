@@ -624,6 +624,11 @@ const BuyTicketForm = ({
                           {{ az: "Komanda", en: "Team", ru: "Команда" }[lang] || "Komanda"}
                         </label>
                       </div>
+                      {form.formState.errors.individual_or_team && (
+                        <p className="text-red-400 text-xs mt-2">
+                          {{ az: "Zəhmət olmasa, fərdi və ya komanda seçin", en: "Please select individual or team", ru: "Пожалуйста, выберите индивидуальный или командный" }[lang] || "Zəhmət olmasa, fərdi və ya komanda seçin"}
+                        </p>
+                      )}
                     </div>
                   )}
                   {isFieldEnabled("team_name") && (
