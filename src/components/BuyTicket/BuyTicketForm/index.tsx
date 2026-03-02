@@ -1068,7 +1068,7 @@ const BuyTicketForm = ({
                                       className="w-full bg-[#FFFFFF14] py-[8px] px-[12px] rounded-full text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#0B98A1]"
                                     >
                                       {product.sizes.map((size) => (
-                                        <option key={size} value={size}>
+                                        <option key={size} value={size} className="text-black bg-white">
                                           {size}
                                         </option>
                                       ))}
