@@ -289,7 +289,7 @@ const BuyTicketForm = ({
         ...prev,
         {
           product_id: product.id,
-          name: product.name_az || product.name,
+          name: (product[`name_${lang}` as keyof typeof product] as string) || product.name,
           price: product.price,
           quantity: 1,
           size: product.sizes?.[0],
@@ -1020,7 +1020,7 @@ const BuyTicketForm = ({
                           />
                           <div className="flex-1">
                             <h4 className="text-white text-sm font-medium">
-                              {product.name_az || product.name}
+                              {product[`name_${lang}` as keyof typeof product] as string || product.name}
                             </h4>
                             <p className="text-[#0B98A1] text-sm mt-1">
                               {product.price} AZN
@@ -1074,7 +1074,9 @@ const BuyTicketForm = ({
                                       {translateds("color") || "Rəng"}
                                     </label>
                                     <div className="flex gap-[8px] flex-wrap">
-                                      {product.colors.map((color) => (
+                                      {product.colors.map((color) => {
+                                        const colorName = color[`name_${lang}` as keyof typeof color] as string || color.name;
+                                        return (
                                         <button
                                           key={color.name}
                                           type="button"
@@ -1088,9 +1090,10 @@ const BuyTicketForm = ({
                                               : "border-transparent"
                                           }`}
                                           style={{ backgroundColor: color.code }}
-                                          title={color.name}
+                                          title={colorName}
                                         />
-                                      ))}
+                                        );
+                                      })}
                                     </div>
                                   </div>
                                 )}

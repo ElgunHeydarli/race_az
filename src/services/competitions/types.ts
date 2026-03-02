@@ -46,6 +46,9 @@ export type LogisticsServices = {
 
 export type ProductColor = {
   name: string;
+  name_az?: string;
+  name_en?: string;
+  name_ru?: string;
   code: string;
 };
 
@@ -53,6 +56,8 @@ export type AvailableProduct = {
   id: number;
   name: string;
   name_az?: string;
+  name_en?: string;
+  name_ru?: string;
   price: number;
   image: string;
   sizes?: string[];
