@@ -192,6 +192,15 @@ const BuyTicketForm = ({
   }, []);
 
   const handleSubmit = async (data: FormValues) => {
+    // Validate individual_or_team if enabled
+    if (isFieldEnabled("individual_or_team") && !data.individual_or_team) {
+      form.setError("individual_or_team", {
+        type: "manual",
+        message: "Please select individual or team",
+      });
+      return;
+    }
+
     try {
       // Prepare products for API
       const productsPayload = selectedProducts.map((p) => ({
