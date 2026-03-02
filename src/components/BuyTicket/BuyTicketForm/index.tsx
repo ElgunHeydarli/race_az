@@ -205,9 +205,9 @@ const BuyTicketForm = ({
       // Prepare products for API
       const productsPayload = selectedProducts.map((p) => ({
         product_id: p.product_id,
-        size: p.size || undefined,
-        color: p.color || undefined,
         quantity: p.quantity,
+        size: p.size || null,
+        color: p.color || null,
       }));
 
       const payload = {
