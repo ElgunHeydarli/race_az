@@ -615,7 +615,7 @@ const BuyTicketForm = ({
                             className="hidden"
                             {...form.register("individual_or_team")}
                           />
-                          {{ az: "Fərdi", en: "Individual", ru: "Индивидуальный" }[lang] || "Fərdi"}
+                          {formConfig?.individual_or_team?.[`option_individual_${lang}` as keyof typeof formConfig.individual_or_team] || { az: "Fərdi", en: "Individual", ru: "Индивидуально" }[lang] || "Fərdi"}
                         </label>
                         <label
                           className={`flex-1 cursor-pointer rounded-full py-[16px] px-[18px] text-center text-white duration-300 ${
@@ -630,7 +630,7 @@ const BuyTicketForm = ({
                             className="hidden"
                             {...form.register("individual_or_team")}
                           />
-                          {{ az: "Komanda", en: "Team", ru: "Команда" }[lang] || "Komanda"}
+                          {formConfig?.individual_or_team?.[`option_team_${lang}` as keyof typeof formConfig.individual_or_team] || { az: "Komanda", en: "Team", ru: "Команда" }[lang] || "Komanda"}
                         </label>
                       </div>
                       {form.formState.errors.individual_or_team && (

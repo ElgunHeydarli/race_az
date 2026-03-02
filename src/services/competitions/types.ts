@@ -83,6 +83,12 @@ export type FormFieldConfig = {
   text_az?: string;
   text_en?: string;
   text_ru?: string;
+  option_individual_az?: string;
+  option_individual_en?: string;
+  option_individual_ru?: string;
+  option_team_az?: string;
+  option_team_en?: string;
+  option_team_ru?: string;
 };
 
 export type FormConfig = {
