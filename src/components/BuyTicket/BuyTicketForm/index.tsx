@@ -1164,14 +1164,26 @@ const BuyTicketForm = ({
                         {selectedProducts.map((item) => (
                           <div
                             key={item.product_id}
-                            className="flex justify-between text-sm"
+                            className="flex justify-between items-center text-sm"
                           >
-                            <span className="text-[#FFFFFF99]">
-                              {item.name} x{item.quantity}
-                              {item.size && ` (${item.size})`}
-                              {item.color && ` - ${item.color}`}
-                            </span>
-                            <span className="text-white">
+                            <div className="text-[#FFFFFF99]">
+                              <span>{item.name} x{item.quantity}</span>
+                              {(item.size || item.color) && (
+                                <div className="flex gap-2 mt-1 text-xs">
+                                  {item.size && (
+                                    <span className="bg-[#FFFFFF14] px-2 py-0.5 rounded-full">
+                                      {translateds("size") || "Ölçü"}: {item.size}
+                                    </span>
+                                  )}
+                                  {item.color && (
+                                    <span className="bg-[#FFFFFF14] px-2 py-0.5 rounded-full">
+                                      {translateds("color") || "Rəng"}: {item.color}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            <span className="text-white whitespace-nowrap ml-2">
                               {(item.price * item.quantity).toFixed(2)} AZN
                             </span>
                           </div>
