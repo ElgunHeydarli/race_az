@@ -1042,7 +1042,7 @@ const BuyTicketForm = ({
                           </div>
                         </div>
 
-                        {product.in_stock && (
+                        {product.in_stock ? (
                           <div className="mt-[12px]">
                             {!isProductSelected(product.id) ? (
                               <button
@@ -1127,13 +1127,18 @@ const BuyTicketForm = ({
                                     </span>
                                     <button
                                       type="button"
+                                      disabled={typeof product.stock === 'number' && (getSelectedProduct(product.id)?.quantity || 0) >= product.stock}
                                       onClick={() =>
                                         updateProductQuantity(
                                           product.id,
                                           (getSelectedProduct(product.id)?.quantity || 0) + 1
                                         )
                                       }
-                                      className="w-[28px] h-[28px] bg-[#FFFFFF14] hover:bg-[#FFFFFF24] rounded-full text-white flex items-center justify-center"
+                                      className={`w-[28px] h-[28px] rounded-full text-white flex items-center justify-center ${
+                                        typeof product.stock === 'number' && (getSelectedProduct(product.id)?.quantity || 0) >= product.stock
+                                          ? "bg-[#FFFFFF08] opacity-50 cursor-not-allowed"
+                                          : "bg-[#FFFFFF14] hover:bg-[#FFFFFF24]"
+                                      }`}
                                     >
                                       +
                                     </button>
@@ -1148,6 +1153,16 @@ const BuyTicketForm = ({
                                 </div>
                               </div>
                             )}
+                          </div>
+                        ) : (
+                          <div className="mt-[12px]">
+                            <button
+                              type="button"
+                              disabled
+                              className="w-full py-[8px] bg-[#FFFFFF14] text-[#FFFFFF66] text-sm rounded-full cursor-not-allowed"
+                            >
+                              {translateds("out_of_stock") || "Stokda yoxdur"}
+                            </button>
                           </div>
                         )}
                       </div>
