@@ -1072,10 +1072,10 @@ const BuyTicketForm = ({
                                       onChange={(e) =>
                                         updateProductSize(product.id, e.target.value)
                                       }
-                                      className="w-full bg-[#FFFFFF14] py-[8px] px-[12px] rounded-full text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#0B98A1]"
+                                      className="w-full bg-[#FFFFFF14] py-[8px] px-[12px] rounded-full text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#0B98A1] [&>option]:text-black [&>option]:bg-white"
                                     >
                                       {product.sizes.map((size) => (
-                                        <option key={size.name} value={size.name} className="text-black bg-white" disabled={size.stock === 0}>
+                                        <option key={size.name} value={size.name} disabled={size.stock === 0}>
                                           {size.name}{size.stock === 0 ? ` (${translateds("out_of_stock") || "Stokda yoxdur"})` : ""}
                                         </option>
                                       ))}
