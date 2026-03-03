@@ -44,12 +44,18 @@ export type LogisticsServices = {
   };
 };
 
+export type ProductSize = {
+  name: string;
+  stock: number;
+};
+
 export type ProductColor = {
   name: string;
   name_az?: string;
   name_en?: string;
   name_ru?: string;
   code: string;
+  stock?: number;
 };
 
 export type AvailableProduct = {
@@ -60,7 +66,7 @@ export type AvailableProduct = {
   name_ru?: string;
   price: number;
   image: string;
-  sizes?: string[];
+  sizes?: ProductSize[];
   colors?: ProductColor[];
   in_stock: boolean;
   stock?: number;

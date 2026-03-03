@@ -301,7 +301,7 @@ const BuyTicketForm = ({
           name: (product[`name_${lang}` as keyof typeof product] as string) || product.name,
           price: product.price,
           quantity: 1,
-          size: product.sizes?.[0],
+          size: product.sizes?.[0]?.name,
           color: product.colors?.[0]?.name,
         },
       ]);
@@ -348,6 +348,13 @@ const BuyTicketForm = ({
 
   const getSelectedProduct = (productId: number) => {
     return selectedProducts.find((p) => p.product_id === productId);
+  };
+
+  const getSelectedSizeStock = (product: AvailableProduct): number | undefined => {
+    const selected = getSelectedProduct(product.id);
+    if (!selected?.size || !product.sizes) return product.stock;
+    const sizeObj = product.sizes.find((s) => s.name === selected.size);
+    return sizeObj?.stock ?? product.stock;
   };
 
   const { data: countriesForDelivery } = useFetch<{
@@ -1068,8 +1075,8 @@ const BuyTicketForm = ({
                                       className="w-full bg-[#FFFFFF14] py-[8px] px-[12px] rounded-full text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#0B98A1]"
                                     >
                                       {product.sizes.map((size) => (
-                                        <option key={size} value={size} className="text-black bg-white">
-                                          {size}
+                                        <option key={size.name} value={size.name} className="text-black bg-white" disabled={size.stock === 0}>
+                                          {size.name}{size.stock === 0 ? ` (${translateds("out_of_stock") || "Stokda yoxdur"})` : ""}
                                         </option>
                                       ))}
                                     </select>
@@ -1085,21 +1092,25 @@ const BuyTicketForm = ({
                                     <div className="flex gap-[8px] flex-wrap">
                                       {product.colors.map((color) => {
                                         const colorName = color[`name_${lang}` as keyof typeof color] as string || color.name;
+                                        const colorOutOfStock = color.stock === 0;
                                         return (
                                         <button
                                           key={color.name}
                                           type="button"
+                                          disabled={colorOutOfStock}
                                           onClick={() =>
                                             updateProductColor(product.id, color.name)
                                           }
                                           className={`w-[28px] h-[28px] rounded-full border-2 ${
-                                            getSelectedProduct(product.id)?.color ===
-                                            color.name
-                                              ? "border-[#0B98A1]"
-                                              : "border-transparent"
+                                            colorOutOfStock
+                                              ? "opacity-30 cursor-not-allowed"
+                                              : getSelectedProduct(product.id)?.color ===
+                                                color.name
+                                                ? "border-[#0B98A1]"
+                                                : "border-transparent"
                                           }`}
                                           style={{ backgroundColor: color.code }}
-                                          title={colorName}
+                                          title={colorOutOfStock ? `${colorName} - ${translateds("out_of_stock") || "Stokda yoxdur"}` : colorName}
                                         />
                                         );
                                       })}
@@ -1125,23 +1136,30 @@ const BuyTicketForm = ({
                                     <span className="text-white text-sm min-w-[20px] text-center">
                                       {getSelectedProduct(product.id)?.quantity || 0}
                                     </span>
-                                    <button
-                                      type="button"
-                                      disabled={typeof product.stock === 'number' && (getSelectedProduct(product.id)?.quantity || 0) >= product.stock}
-                                      onClick={() =>
-                                        updateProductQuantity(
-                                          product.id,
-                                          (getSelectedProduct(product.id)?.quantity || 0) + 1
-                                        )
-                                      }
-                                      className={`w-[28px] h-[28px] rounded-full text-white flex items-center justify-center ${
-                                        typeof product.stock === 'number' && (getSelectedProduct(product.id)?.quantity || 0) >= product.stock
-                                          ? "bg-[#FFFFFF08] opacity-50 cursor-not-allowed"
-                                          : "bg-[#FFFFFF14] hover:bg-[#FFFFFF24]"
-                                      }`}
-                                    >
-                                      +
-                                    </button>
+                                    {(() => {
+                                      const stockLimit = getSelectedSizeStock(product);
+                                      const qty = getSelectedProduct(product.id)?.quantity || 0;
+                                      const atLimit = typeof stockLimit === 'number' && qty >= stockLimit;
+                                      return (
+                                        <button
+                                          type="button"
+                                          disabled={atLimit}
+                                          onClick={() =>
+                                            updateProductQuantity(
+                                              product.id,
+                                              qty + 1
+                                            )
+                                          }
+                                          className={`w-[28px] h-[28px] rounded-full text-white flex items-center justify-center ${
+                                            atLimit
+                                              ? "bg-[#FFFFFF08] opacity-50 cursor-not-allowed"
+                                              : "bg-[#FFFFFF14] hover:bg-[#FFFFFF24]"
+                                          }`}
+                                        >
+                                          +
+                                        </button>
+                                      );
+                                    })()}
                                   </div>
                                   <button
                                     type="button"
@@ -1151,11 +1169,18 @@ const BuyTicketForm = ({
                                     {translateds("remove") || "Sil"}
                                   </button>
                                 </div>
-                                {typeof product.stock === 'number' && (getSelectedProduct(product.id)?.quantity || 0) >= product.stock && (
-                                  <p className="text-yellow-400 text-xs mt-1">
-                                    {{ az: `Stokda ${product.stock} ədəd var`, en: `Only ${product.stock} in stock`, ru: `На складе ${product.stock} шт.` }[lang] || `Stokda ${product.stock} ədəd var`}
-                                  </p>
-                                )}
+                                {(() => {
+                                  const stockLimit = getSelectedSizeStock(product);
+                                  const qty = getSelectedProduct(product.id)?.quantity || 0;
+                                  if (typeof stockLimit === 'number' && qty >= stockLimit) {
+                                    return (
+                                      <p className="text-yellow-400 text-xs mt-1">
+                                        {{ az: `Stokda ${stockLimit} ədəd var`, en: `Only ${stockLimit} in stock`, ru: `На складе ${stockLimit} шт.` }[lang] || `Stokda ${stockLimit} ədəd var`}
+                                      </p>
+                                    );
+                                  }
+                                  return null;
+                                })()}
                               </div>
                             )}
                           </div>
