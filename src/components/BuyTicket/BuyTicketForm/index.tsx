@@ -1151,6 +1151,11 @@ const BuyTicketForm = ({
                                     {translateds("remove") || "Sil"}
                                   </button>
                                 </div>
+                                {typeof product.stock === 'number' && (getSelectedProduct(product.id)?.quantity || 0) >= product.stock && (
+                                  <p className="text-yellow-400 text-xs mt-1">
+                                    {{ az: `Stokda ${product.stock} ədəd var`, en: `Only ${product.stock} in stock`, ru: `На складе ${product.stock} шт.` }[lang] || `Stokda ${product.stock} ədəd var`}
+                                  </p>
+                                )}
                               </div>
                             )}
                           </div>
