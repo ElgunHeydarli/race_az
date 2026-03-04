@@ -12,6 +12,7 @@ interface IBasketProductCard {
   currency: string;
   color: Color;
   variant_id?: number;
+  stock?: number;
 }
 
 const BasketProductCard = ({
@@ -23,6 +24,7 @@ const BasketProductCard = ({
   price,
   quantity,
   variant_id,
+  stock,
 }: IBasketProductCard) => {
   const { increaseQuantity, removeFromBasket, decreaseQuantity } = useBasket();
   return (
@@ -59,7 +61,12 @@ const BasketProductCard = ({
           </span>
           <button
             onClick={() => increaseQuantity(id, variant_id)}
-            className="h-8 w-8 inline-flex cursor-pointer justify-center items-center rounded-full bg-[#FFFFFF1F] hover:bg-white/10">
+            disabled={typeof stock === 'number' && quantity >= stock}
+            className={`h-8 w-8 inline-flex justify-center items-center rounded-full ${
+              typeof stock === 'number' && quantity >= stock
+                ? 'bg-[#FFFFFF08] opacity-40 cursor-not-allowed'
+                : 'bg-[#FFFFFF1F] hover:bg-white/10 cursor-pointer'
+            }`}>
             <Plus className="w-4 h-4 text-white" />
           </button>
         </div>

@@ -12,6 +12,7 @@ export type BasketItem = {
   variant_id?: number;
   currency: string;
   quantity: number;
+  stock?: number;
 };
 
 export type OrderItem = {
@@ -72,11 +73,11 @@ export const useBasket = create<BasketState>()(
         set(() => {
           const basketData = get().basket;
           return {
-            basket: basketData.map((item) =>
-              matchItem(item, { id: itemId, variant_id: variantId })
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            ),
+            basket: basketData.map((item) => {
+              if (!matchItem(item, { id: itemId, variant_id: variantId })) return item;
+              if (typeof item.stock === 'number' && item.quantity >= item.stock) return item;
+              return { ...item, quantity: item.quantity + 1 };
+            }),
           };
         });
       },

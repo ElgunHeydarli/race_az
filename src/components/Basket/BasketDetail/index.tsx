@@ -46,6 +46,7 @@ const BasketDetail = () => {
                     key={`${item.id}-${item.variant_id ?? `${item.color?.id ?? 'nc'}-${item.size?.id ?? 'ns'}`}`}
                     color={item.color}
                     size={item.size}
+                    stock={item.stock}
                   />
                 ))
               )}

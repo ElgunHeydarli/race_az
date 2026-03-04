@@ -206,6 +206,7 @@ const ProductMainDetail = () => {
           color: selectedColor,
           size: selectedSize ? selectedSize : null,
           variant_id: selectedVariant?.id,
+          stock: selectedSize?.stock ?? selectedVariant?.stock ?? productDetail.stock,
         };
         addItem(basketItem);
       }

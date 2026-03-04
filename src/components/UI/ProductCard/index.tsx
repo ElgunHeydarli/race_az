@@ -173,6 +173,7 @@ export default function ProductCard({
         quantity: 1,
         color: selectedColor,
         size: null,
+        stock: productDetail.stock,
       };
       addItem(basketItem);
     }
@@ -189,6 +190,7 @@ export default function ProductCard({
         quantity: 1,
         color: selectedColor,
         size: size,
+        stock: size.stock ?? productDetail.stock,
       };
 
       if (buttonRef.current) {
