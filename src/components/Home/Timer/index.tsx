@@ -21,7 +21,6 @@ const Timer = () => {
       const nextRace = findNearestFutureRace(competitions);
 
       if (nextRace?.competition_start_date) {
-        console.log(nextRace.competition_start_date);
         setTargetDate(new Date(nextRace.competition_start_date));
       } else {
         setTargetDate(new Date(Date.now() + 86400000));

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Timer from '../Timer';
 import ScrollIndicator from './ScrollIndicator';
 import React, { useEffect, useState } from 'react';
@@ -14,10 +14,11 @@ const HeaderSection = () => {
   const [nearestRace, setNearestRace] = useState<Competition | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string>('');
   const [mobileImage, setMobileImage] = React.useState<string>('');
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-  const { data: allCompetitionsData } = useGetHomepageCompetitions();
+  const { data: allCompetitionsData, isLoading } = useGetHomepageCompetitions();
   const competitions = allCompetitionsData?.data || [];
-  console.log(backgroundImage, 'backgroundImagebackgroundImage');
+
   useEffect(() => {
     if (competitions && competitions.length > 0) {
       const nextRace = findNearestFutureRace(competitions);
@@ -37,73 +38,103 @@ const HeaderSection = () => {
     setIsMobile(window.innerWidth <= 768);
   }
 
-  console.log(mobileImage, 'mobile_image')
   React.useEffect(() => {
     handleScreen();
     window.addEventListener("resize", handleScreen);
     return () => window.removeEventListener("resize", handleScreen);
   }, []);
 
+  // Preload background image
+  const currentBgUrl = ismobile ? mobileImage : backgroundImage;
+  useEffect(() => {
+    if (!currentBgUrl) return;
+    setImageLoaded(false);
+    const img = new Image();
+    img.onload = () => setImageLoaded(true);
+    img.onerror = () => setImageLoaded(true); // show content even if image fails
+    img.src = currentBgUrl;
+  }, [currentBgUrl]);
+
+  const isReady = !isLoading && nearestRace && imageLoaded;
+
   return (
     <header
       className="relative bg-cover bg-center h-screen flex justify-center items-center overflow-hidden"
       style={{
-        backgroundImage: ismobile ? `url(${mobileImage})` : `url(${backgroundImage})`,
+        backgroundImage: isReady ? `url(${currentBgUrl})` : 'none',
+        backgroundColor: '#111',
       }}>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="absolute top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.36)]"
-      />
+      {/* Loading skeleton */}
+      <AnimatePresence>
+        {!isReady && (
+          <motion.div
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-6"
+          >
+            <div className="w-12 h-12 border-3 border-white/20 border-t-[#0B98A1] rounded-full animate-spin" />
+            <div className="text-white/40 text-sm">{translateds('yuklenir') || 'Yüklənir...'}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
-        className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"
-      />
+      {/* Main content - only renders when data + image are ready */}
+      {isReady && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="absolute top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.36)]"
+          />
 
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-        className="mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-52 relative z-[1] text-center flex justify-center items-center flex-col">
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-white font-medium text-[24px] sm:text-[32px] md:text-[40px] lg:text-[48px] xl:text-[52px] leading-tight">
-          {nearestRace?.name}
-        </motion.h1>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"
+          />
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="text-white font-normal text-[12px]  md:text-lg pt-[28px] max-w-[980px]">
-          {nearestRace?.text}
-        </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-52 relative z-[1] text-center flex justify-center items-center flex-col">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="text-white font-medium text-[24px] sm:text-[32px] md:text-[40px] lg:text-[48px] xl:text-[52px] leading-tight">
+              {nearestRace?.name}
+            </motion.h1>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.9 }}>
-          <Timer />
-        </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="text-white font-normal text-[12px]  md:text-lg pt-[28px] max-w-[980px]">
+              {nearestRace?.text}
+            </motion.p>
 
-        <motion.button
-          onMouseEnter={() => setSvgColor(true)}
-          onMouseLeave={() => setSvgColor(false)}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.05 }}
-          onClick={() => {
-            navigate(`/competition/${nearestRace?.slug}`)
-          }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-          className="bg-white hover:bg-[#0B98A1] hover:text-white transition-colors flex items-center gap-3 cursor-pointer text-[#0B98A1] rounded-full md:py-[16px] py-[13px] px-[20px] md:px-[28px] text-[14px] md:text-base">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.5 }}>
+              <Timer />
+            </motion.div>
+
+            <motion.button
+              onMouseEnter={() => setSvgColor(true)}
+              onMouseLeave={() => setSvgColor(false)}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.05 }}
+              onClick={() => {
+                navigate(`/competition/${nearestRace?.slug}`)
+              }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.3, delay: 0.6 }}
+              className="bg-white hover:bg-[#0B98A1] hover:text-white transition-colors flex items-center gap-3 cursor-pointer text-[#0B98A1] rounded-full md:py-[16px] py-[13px] px-[20px] md:px-[28px] text-[14px] md:text-base">
           <span>
             <svg
               id="iconSvg"
@@ -144,9 +175,11 @@ const HeaderSection = () => {
           <Link style={{ textTransform: "capitalize" }} to={`/competition/${nearestRace?.slug}`}>
             {translateds('discover_races')}
           </Link>
-        </motion.button>
-      </motion.div>
-      <ScrollIndicator />
+            </motion.button>
+          </motion.div>
+          <ScrollIndicator />
+        </>
+      )}
     </header>
   );
 };
